@@ -6,7 +6,8 @@
 - ゲームは `index.html` 1 枚で完結（Matter.js・文字データ・BGM をすべて埋め込み）。外部読み込みは Google Fonts の Klee One だけ。
 - `index.html` はリリース版（デバッグ用フック・計測コードは削除済み）。変更はこのファイルに直接入れる。
 - 個人情報（本名・住所・電話番号・生年月日・メールアドレスなど）はリポジトリに絶対に入れない。
-- 変更したら、itch.io と iOS（`hiragana-balance.html` にリネームして同梱）の両方に反映が必要なことをユーザーに伝える。
+- `main` の `index.html` が更新されると、GitHub Actions（`.github/workflows/itch-deploy.yml`）が itch.io に自動でアップロードする（Secrets の `BUTLER_API_KEY` が必要）。つまり **main に push = 世界に公開**。作業は別ブランチで進め、プレビューでユーザーの OK をもらってから main に入れる。
+- iOS（`hiragana-balance.html` にリネームして同梱）は自動では更新されないので、変更したらユーザーに伝える。
 
 ## ファイル内の構成（index.html）
 - `<script>` 1 つ目: Matter.js 0.20.0（minified）。2 つ目: poly-decomp。

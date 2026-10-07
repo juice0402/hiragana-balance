@@ -1,0 +1,39 @@
+# main の index.html が更新されたら、itch.io に自動でアップロードする。
+# 必要なもの: リポジトリの Secrets に BUTLER_API_KEY（itch.io の API キー）
+# キーが未設定のときは何もせずに終わる。
+name: itch.io に公開
+
+on:
+  push:
+    branches: [main]
+    paths: [index.html]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+      ITCH_TARGET: juice0402/hiragana-balance:html5
+    steps:
+      - name: APIキーの確認
+        if: env.BUTLER_API_KEY == ''
+        run: echo "::warning::BUTLER_API_KEY が未設定なので公開をスキップしました"
+
+      - uses: actions/checkout@v4
+        if: env.BUTLER_API_KEY != ''
+
+      - name: butler を用意
+        if: env.BUTLER_API_KEY != ''
+        run: |
+          curl -fsSL -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
+          unzip -q butler.zip -d butler-bin
+          chmod +x butler-bin/butler
+          butler-bin/butler -V
+
+      - name: itch.io にアップロード
+        if: env.BUTLER_API_KEY != ''
+        run: |
+          mkdir -p build
+          cp index.html build/index.html
+          butler-bin/butler push build "$ITCH_TARGET" --userversion "${GITHUB_SHA::7}"
