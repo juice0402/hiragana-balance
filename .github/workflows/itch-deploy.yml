@@ -20,7 +20,7 @@ jobs:
         if: env.BUTLER_API_KEY == ''
         run: echo "::warning::BUTLER_API_KEY が未設定なので公開をスキップしました"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         if: env.BUTLER_API_KEY != ''
 
       - name: butler を用意
