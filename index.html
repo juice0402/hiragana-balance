@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>ひらがなバランス</title>
+<title>Hiragana Balance</title>
 <script>
 /*!
 * matter-js 0.20.0 by @liabru
@@ -191,48 +191,52 @@
   .credits-body h2{ font-size:13px; font-weight:600; margin:12px 0 4px; color:var(--sumi); }
   .credits-body p{ font-size:11px; line-height:1.5; margin:0 0 6px; color:#5c4d3b; word-break:break-all; }
   .credits-body pre{ font-family:inherit; font-size:10px; line-height:1.45; white-space:pre-wrap; word-break:break-word; color:#5c4d3b; margin:0; }
+  #scoreLabel, #nextLabel{ letter-spacing:.06em; }
+  .panel .over-title{ font-size:18px; font-weight:600; color:var(--sumi); margin-bottom:6px; }
+  .panel .kicker{ font-size:12px; letter-spacing:.3em; padding-left:.3em; color:#8a7860; margin:0 0 4px; }
 </style>
 </head>
 <body>
 <div id="stage-wrap">
   <canvas id="gameCanvas"></canvas>
   <div id="hud">
-    <div id="scoreWrap"><span id="scoreLabel">スコア</span><div id="scoreVal">0</div></div>
-    <div id="nextWrap"><span id="nextLabel">つぎ</span><div id="nextGlyph"></div></div>
+    <div id="scoreWrap"><span id="scoreLabel">SCORE</span><div id="scoreVal">0</div></div>
+    <div id="nextWrap"><span id="nextLabel">NEXT</span><div id="nextGlyph"></div></div>
   </div>
-  <div id="settingsBtn" aria-label="せってい"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="#3a332c"><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(0 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(45 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(90 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(135 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(180 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(225 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(270 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(315 12 12)"/><circle cx="12" cy="12" r="7.2"/></g><circle cx="12" cy="12" r="2.9" fill="#fffaf1"/></svg></div>
+  <div id="settingsBtn" aria-label="Settings"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="#3a332c"><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(0 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(45 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(90 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(135 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(180 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(225 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(270 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(315 12 12)"/><circle cx="12" cy="12" r="7.2"/></g><circle cx="12" cy="12" r="2.9" fill="#fffaf1"/></svg></div>
   <div id="settings-panel">
     <div class="row">
-      <span class="row-label">さいこうきろく</span>
+      <span class="row-label">Best</span>
       <span class="row-value" id="panel-best-score">0</span>
     </div>
     <div class="row">
-      <span class="row-label">おと</span>
-      <div id="toggle-switch" aria-label="おとのオンオフ"><div class="thumb"></div></div>
+      <span class="row-label">Sound</span>
+      <div id="toggle-switch" aria-label="Sound on/off"><div class="thumb"></div></div>
     </div>
     <div class="row">
-      <span class="row-label">クレジット</span>
-      <button id="creditsBtn" type="button">みる</button>
+      <span class="row-label">Credits</span>
+      <button id="creditsBtn" type="button">View</button>
     </div>
   </div>
-  <div class="rotateBtn" id="rotateLeftBtn" aria-label="とけいまわりにまわす"><svg viewBox="12 -9 23 47" width="28" height="58" aria-hidden="true"><g transform="translate(47 0) scale(-1 1)"><g transform="rotate(-90 24 15)"><path d="M3 9 Q20 32 38 15.5 L38.8 9.8 Q20 21.2 3 9 Z" fill="#3a332c"/><path d="M46 5.4 L42.2 18.6 L32.8 8.2 Z" fill="#3a332c" stroke="#3a332c" stroke-width="1.8" stroke-linejoin="round"/></g></g></svg></div>
-  <div class="rotateBtn" id="rotateRightBtn" aria-label="はんとけいまわりにまわす"><svg viewBox="12 -9 23 47" width="28" height="58" aria-hidden="true"><g transform="rotate(-90 24 15)"><path d="M3 9 Q20 32 38 15.5 L38.8 9.8 Q20 21.2 3 9 Z" fill="#3a332c"/><path d="M46 5.4 L42.2 18.6 L32.8 8.2 Z" fill="#3a332c" stroke="#3a332c" stroke-width="1.8" stroke-linejoin="round"/></g></svg></div>
+  <div class="rotateBtn" id="rotateLeftBtn" aria-label="Rotate clockwise"><svg viewBox="12 -9 23 47" width="28" height="58" aria-hidden="true"><g transform="translate(47 0) scale(-1 1)"><g transform="rotate(-90 24 15)"><path d="M3 9 Q20 32 38 15.5 L38.8 9.8 Q20 21.2 3 9 Z" fill="#3a332c"/><path d="M46 5.4 L42.2 18.6 L32.8 8.2 Z" fill="#3a332c" stroke="#3a332c" stroke-width="1.8" stroke-linejoin="round"/></g></g></svg></div>
+  <div class="rotateBtn" id="rotateRightBtn" aria-label="Rotate counterclockwise"><svg viewBox="12 -9 23 47" width="28" height="58" aria-hidden="true"><g transform="rotate(-90 24 15)"><path d="M3 9 Q20 32 38 15.5 L38.8 9.8 Q20 21.2 3 9 Z" fill="#3a332c"/><path d="M46 5.4 L42.2 18.6 L32.8 8.2 Z" fill="#3a332c" stroke="#3a332c" stroke-width="1.8" stroke-linejoin="round"/></g></svg></div>
   <div id="startOverlay" class="panel-overlay">
     <div class="panel">
-      <h1>ひらがなバランス</h1>
-      <p>もじを おとして たかく つみあげよう！</p>
-      <button class="cta" id="startBtn">はじめる</button>
+      <h1>Hiragana Balance</h1>
+      <div class="kicker" lang="ja">ひらがなバランス</div>
+      <p>Drop the letters and stack them high!</p>
+      <button class="cta" id="startBtn">Start</button>
     </div>
   </div>
   <div id="creditsOverlay" class="panel-overlay hidden">
     <div class="panel credits">
-      <h1>クレジット</h1>
+      <h1>Credits</h1>
       <div class="credits-body">
-        <h2>もじの かたち</h2>
-        <p>Yuji Syuku<br>Copyright 2021 The Yuji Project Authors (https://github.com/Kinutafontfactory/Yuji)<br>SIL Open Font License, Version 1.1(ぜんぶん は した)</p>
-        <h2>がめんの もじ</h2>
-        <p>Klee One(Google Fonts)<br>SIL Open Font License, Version 1.1</p>
-        <h2>ぶつり エンジン</h2>
+        <h2>Letter shapes</h2>
+        <p>Yuji Syuku<br>Copyright 2021 The Yuji Project Authors (https://github.com/Kinutafontfactory/Yuji)<br>SIL Open Font License, Version 1.1 (full text below)</p>
+        <h2>Interface font</h2>
+        <p>Klee One (Google Fonts)<br>SIL Open Font License, Version 1.1</p>
+        <h2>Physics engine</h2>
         <p>Matter.js 0.20.0<br>Copyright (c) Liam Brummitt and contributors<br>MIT License</p>
         <p>poly-decomp.js<br>Copyright (c) 2013 Stefan Hedman<br>MIT License</p>
         <h2>MIT License</h2>
@@ -336,16 +340,16 @@ DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
       </div>
-      <button class="cta" id="creditsClose" type="button">とじる</button>
+      <button class="cta" id="creditsClose" type="button">Close</button>
     </div>
   </div>
   <div id="overOverlay" class="panel-overlay hidden">
     <div class="panel">
-      <div>くずれちゃった！</div>
-      <div class="sub">つみあげた もじ</div>
+      <div class="over-title">Oops, it toppled!</div>
+      <div class="sub">Letters stacked</div>
       <div class="big" id="finalScore">0</div>
-      <div class="sub" id="highScoreLine">さいこうきろく 0</div>
-      <button class="cta" id="retryBtn">もういちど あそぶ</button>
+      <div class="sub" id="highScoreLine">Best: 0</div>
+      <button class="cta" id="retryBtn">Play again</button>
     </div>
   </div>
 </div>
@@ -414,6 +418,9 @@ if (window.visualViewport) window.visualViewport.addEventListener('resize', layo
 
 // ---- KANA order (must match char_data_embed.js index order) ----
 var KANA = CHAR_DATA.map(function(d){ return d.ch; });
+var ROMAJI = {}; // Hepburn reading shown under the held letter (を = wo so it differs from お)
+('a i u e o ka ki ku ke ko sa shi su se so ta chi tsu te to na ni nu ne no ha hi fu he ho ' +
+ 'ma mi mu me mo ya yu yo ra ri ru re ro wa wo n').split(' ').forEach(function(r, i){ ROMAJI['あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん'[i]] = r; });
 
 // ---- per-character body-creation cache: build Matter.js vertex sets once,
 var PIECE_TARGET_R = 30;
@@ -1126,7 +1133,7 @@ function showGameOver(){
   GAME.gameOver = true;
   if (GAME.score > GAME.highScore) { GAME.highScore = GAME.score; saveHighScore(GAME.highScore); }
   document.getElementById('finalScore').textContent = GAME.score;
-  document.getElementById('highScoreLine').textContent = 'さいこうきろく ' + GAME.highScore;
+  document.getElementById('highScoreLine').textContent = 'Best: ' + GAME.highScore;
   updatePanelBestScore();
   document.getElementById('overOverlay').classList.remove('hidden');
 }
@@ -1623,6 +1630,17 @@ function render(){
     ctx.translate(-cache.pathCx, -cache.pathCy);
     fillGlyph(ctx, cache, '#3a332c');
     ctx.restore();
+    if (!pointerDown && !GAME.gameOver && ROMAJI[currentPiece.ch]) {
+      ctx.save();
+      ctx.font = '600 14px "Klee One", "Hiragino Mincho ProN", "Yu Mincho", serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.lineJoin = 'round'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(255,252,244,.9)';
+      var ry = currentPiece.y + glyphRadius(currentPiece.ch) * currentPiece.r + 6;
+      ctx.strokeText(ROMAJI[currentPiece.ch], currentPiece.x, ry);
+      ctx.fillStyle = '#7a6750';
+      ctx.fillText(ROMAJI[currentPiece.ch], currentPiece.x, ry);
+      ctx.restore();
+    }
   }
 }
 
