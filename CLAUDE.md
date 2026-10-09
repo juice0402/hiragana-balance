@@ -30,6 +30,10 @@
 - 小さすぎる輪郭（面積 2e-3 以下）は除外（「ほ」で NaN が出た対策）。
 - 文字を増やす（例: 小 1 漢字 80 字）ときは、同じ手順で CHAR_DATA を作り直す必要がある。生成スクリプトはコンテナのリセットで消えているので作り直しが必要。
 
+## ほかのページへの埋め込み
+- iframe の中で遊んでいるときは、ゲームオーバーで `parent.postMessage({ source: 'hiragana-balance', type: 'gameover', score, best }, '*')` を送る。あそびトークのゲームセンター（`juice0402/asobi-talk` の `public/games-static/balance.html`）がこれを受けてメダルを記録する。
+- ゲームを直したら、あそびトークの `public/games-static/balance.html` にも同じファイルを入れる（自動ではコピーされない）。
+
 ## 保存データ
 - 最高記録の localStorage キーは `hiraganaTowerBattle.highScore`、ミュートは `hiraganaTowerBattle.muted`。旧名のままだが、既存プレイヤーの記録が消えるので変更しないこと。
 

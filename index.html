@@ -1268,6 +1268,12 @@ function showGameOver(){
   document.getElementById('highScoreLine').textContent = bestLineText(GAME.highScore);
   updatePanelBestScore();
   document.getElementById('overOverlay').classList.remove('hidden');
+  // 別のページの中（あそびトークのゲームセンターなど）で遊んでいるときは、外のページにスコアを知らせる
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ source: 'hiragana-balance', type: 'gameover', score: GAME.score, best: GAME.highScore }, '*');
+    }
+  } catch (e) { /* ignore */ }
 }
 function updatePanelBestScore(){
   var el = document.getElementById('panel-best-score');
