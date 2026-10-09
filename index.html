@@ -192,6 +192,19 @@
   .credits-body p{ font-size:11px; line-height:1.5; margin:0 0 6px; color:#5c4d3b; word-break:break-all; }
   .credits-body pre{ font-family:inherit; font-size:10px; line-height:1.45; white-space:pre-wrap; word-break:break-word; color:#5c4d3b; margin:0; }
   #scoreLabel, #nextLabel{ letter-spacing:.06em; }
+  #langSelect{
+    font-family:inherit; font-size:12px; font-weight:600; color:var(--sumi); background:#fffdf7;
+    border:1.8px solid var(--sumi); border-radius:10px 8px 11px 7px / 8px 11px 7px 10px;
+    padding:2px 4px; max-width:132px; cursor:pointer;
+  }
+  #startOverlay .panel, #overOverlay .panel{ max-width:min(92vw, 330px); }
+  #startOverlay .panel h1{ white-space:nowrap; }
+  @media (max-width:360px){ #startOverlay .panel, #overOverlay .panel{ padding-left:20px; padding-right:20px; } }
+  html[lang="zh-CN"] body{ font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif; }
+  html[lang="zh-TW"] body{ font-family:"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif; }
+  html[lang="ko"] body{ font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif; }
+  html[lang="th"] body{ font-family:"Thonburi","Leelawadee UI","Noto Sans Thai",sans-serif; }
+  html[lang="vi"] body, html[lang="tr"] body{ font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; }
   .panel .over-title{ font-size:18px; font-weight:600; color:var(--sumi); margin-bottom:6px; }
   .panel .kicker{ font-size:12px; letter-spacing:.3em; padding-left:.3em; color:#8a7860; margin:0 0 4px; }
 </style>
@@ -206,37 +219,41 @@
   <div id="settingsBtn" aria-label="Settings"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="#3a332c"><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(0 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(45 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(90 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(135 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(180 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(225 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(270 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(315 12 12)"/><circle cx="12" cy="12" r="7.2"/></g><circle cx="12" cy="12" r="2.9" fill="#fffaf1"/></svg></div>
   <div id="settings-panel">
     <div class="row">
-      <span class="row-label">Best</span>
+      <span class="row-label" id="lblBest">Best</span>
       <span class="row-value" id="panel-best-score">0</span>
     </div>
     <div class="row">
-      <span class="row-label">Sound</span>
+      <span class="row-label" id="lblSound">Sound</span>
       <div id="toggle-switch" aria-label="Sound on/off"><div class="thumb"></div></div>
     </div>
     <div class="row">
-      <span class="row-label">Credits</span>
+      <span class="row-label" id="lblCredits">Credits</span>
       <button id="creditsBtn" type="button">View</button>
+    </div>
+    <div class="row">
+      <span class="row-label" id="lblLang">Language</span>
+      <select id="langSelect" aria-label="Language"></select>
     </div>
   </div>
   <div class="rotateBtn" id="rotateLeftBtn" aria-label="Rotate clockwise"><svg viewBox="12 -9 23 47" width="28" height="58" aria-hidden="true"><g transform="translate(47 0) scale(-1 1)"><g transform="rotate(-90 24 15)"><path d="M3 9 Q20 32 38 15.5 L38.8 9.8 Q20 21.2 3 9 Z" fill="#3a332c"/><path d="M46 5.4 L42.2 18.6 L32.8 8.2 Z" fill="#3a332c" stroke="#3a332c" stroke-width="1.8" stroke-linejoin="round"/></g></g></svg></div>
   <div class="rotateBtn" id="rotateRightBtn" aria-label="Rotate counterclockwise"><svg viewBox="12 -9 23 47" width="28" height="58" aria-hidden="true"><g transform="rotate(-90 24 15)"><path d="M3 9 Q20 32 38 15.5 L38.8 9.8 Q20 21.2 3 9 Z" fill="#3a332c"/><path d="M46 5.4 L42.2 18.6 L32.8 8.2 Z" fill="#3a332c" stroke="#3a332c" stroke-width="1.8" stroke-linejoin="round"/></g></svg></div>
   <div id="startOverlay" class="panel-overlay">
     <div class="panel">
-      <h1>Hiragana Balance</h1>
-      <div class="kicker" lang="ja">ひらがなバランス</div>
-      <p>Drop the letters and stack them high!</p>
+      <h1 id="titleText">Hiragana Balance</h1>
+      <div class="kicker" id="kickerText" lang="ja">ひらがなバランス</div>
+      <p id="tagline">Drop the letters and stack them high!</p>
       <button class="cta" id="startBtn">Start</button>
     </div>
   </div>
   <div id="creditsOverlay" class="panel-overlay hidden">
     <div class="panel credits">
-      <h1>Credits</h1>
+      <h1 id="creditsTitle">Credits</h1>
       <div class="credits-body">
-        <h2>Letter shapes</h2>
-        <p>Yuji Syuku<br>Copyright 2021 The Yuji Project Authors (https://github.com/Kinutafontfactory/Yuji)<br>SIL Open Font License, Version 1.1 (full text below)</p>
-        <h2>Interface font</h2>
+        <h2 id="crLetters">Letter shapes</h2>
+        <p>Yuji Syuku<br>Copyright 2021 The Yuji Project Authors (https://github.com/Kinutafontfactory/Yuji)<br>SIL Open Font License, Version 1.1<span id="oflNote"> (full text below)</span></p>
+        <h2 id="crUi">Interface font</h2>
         <p>Klee One (Google Fonts)<br>SIL Open Font License, Version 1.1</p>
-        <h2>Physics engine</h2>
+        <h2 id="crPhysics">Physics engine</h2>
         <p>Matter.js 0.20.0<br>Copyright (c) Liam Brummitt and contributors<br>MIT License</p>
         <p>poly-decomp.js<br>Copyright (c) 2013 Stefan Hedman<br>MIT License</p>
         <h2>MIT License</h2>
@@ -345,8 +362,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
   </div>
   <div id="overOverlay" class="panel-overlay hidden">
     <div class="panel">
-      <div class="over-title">Oops, it toppled!</div>
-      <div class="sub">Letters stacked</div>
+      <div class="over-title" id="overTitle">Oops, it toppled!</div>
+      <div class="sub" id="overSub">Letters stacked</div>
       <div class="big" id="finalScore">0</div>
       <div class="sub" id="highScoreLine">Best: 0</div>
       <button class="cta" id="retryBtn">Play again</button>
@@ -417,6 +434,121 @@ window.addEventListener('resize', layout);
 if (window.visualViewport) window.visualViewport.addEventListener('resize', layout);
 
 // ---- KANA order (must match char_data_embed.js index order) ----
+// ---- languages: picked from the saved choice, ?lang=, the app (window.HB_LANGS) or the browser ----
+var LANG_KEY = 'hiraganaTowerBattle.lang';
+var LANGS = [
+  ['en', 'English'], ['ja', '日本語'], ['zh-CN', '简体中文'], ['zh-TW', '繁體中文'], ['ko', '한국어'],
+  ['es', 'Español'], ['pt', 'Português'], ['fr', 'Français'], ['de', 'Deutsch'], ['it', 'Italiano'],
+  ['ru', 'Русский'], ['id', 'Bahasa Indonesia'], ['tr', 'Türkçe'], ['vi', 'Tiếng Việt'], ['th', 'ไทย']
+];
+var I18N = {
+  en: { doc:'Hiragana Balance', title:'Hiragana Balance', kicker:'ひらがなバランス', tagline:'Drop the letters and stack them high!', start:'Start',
+        score:'SCORE', next:'NEXT', settings:'Settings', best:'Best', sound:'Sound', soundToggle:'Sound on/off', credits:'Credits', view:'View', language:'Language',
+        rotCW:'Rotate clockwise', rotCCW:'Rotate counterclockwise',
+        crTitle:'Credits', crLetters:'Letter shapes', crUi:'Interface font', crPhysics:'Physics engine', oflNote:' (full text below)', close:'Close',
+        overTitle:'Oops, it toppled!', overSub:'Letters stacked', bestLine:'Best: {n}', again:'Play again' },
+  ja: { doc:'ひらがなバランス', title:'ひらがなバランス', kicker:'', tagline:'もじを おとして たかく つみあげよう！', start:'はじめる',
+        score:'スコア', next:'つぎ', settings:'せってい', best:'さいこうきろく', sound:'おと', soundToggle:'おとのオンオフ', credits:'クレジット', view:'みる', language:'ことば',
+        rotCW:'とけいまわりにまわす', rotCCW:'はんとけいまわりにまわす',
+        crTitle:'クレジット', crLetters:'もじの かたち', crUi:'がめんの もじ', crPhysics:'ぶつり エンジン', oflNote:'(ぜんぶん は した)', close:'とじる',
+        overTitle:'くずれちゃった！', overSub:'つみあげた もじ', bestLine:'さいこうきろく {n}', again:'もういちど あそぶ' },
+  'zh-CN': { tagline:'让文字落下，堆得高高的！', start:'开始', score:'得分', next:'下一个', settings:'设置', best:'最高纪录', sound:'声音', soundToggle:'声音开关',
+        credits:'制作信息', view:'查看', language:'语言', rotCW:'顺时针旋转', rotCCW:'逆时针旋转',
+        crTitle:'制作信息', crLetters:'文字字形', crUi:'界面字体', crPhysics:'物理引擎', oflNote:'（全文见下方）', close:'关闭',
+        overTitle:'哎呀，倒了！', overSub:'堆起的文字', bestLine:'最高纪录：{n}', again:'再玩一次' },
+  'zh-TW': { tagline:'讓文字落下，堆得高高的！', start:'開始', score:'分數', next:'下一個', settings:'設定', best:'最高紀錄', sound:'聲音', soundToggle:'聲音開關',
+        credits:'製作資訊', view:'查看', language:'語言', rotCW:'順時針旋轉', rotCCW:'逆時針旋轉',
+        crTitle:'製作資訊', crLetters:'文字字形', crUi:'介面字體', crPhysics:'物理引擎', oflNote:'（全文見下方）', close:'關閉',
+        overTitle:'哎呀，倒了！', overSub:'堆起的文字', bestLine:'最高紀錄：{n}', again:'再玩一次' },
+  ko: { tagline:'글자를 떨어뜨려 높이 쌓아 보세요!', start:'시작', score:'점수', next:'다음', settings:'설정', best:'최고 기록', sound:'소리', soundToggle:'소리 켜기/끄기',
+        credits:'크레딧', view:'보기', language:'언어', rotCW:'시계 방향으로 회전', rotCCW:'시계 반대 방향으로 회전',
+        crTitle:'크레딧', crLetters:'글자 모양', crUi:'화면 글꼴', crPhysics:'물리 엔진', oflNote:' (전문은 아래에)', close:'닫기',
+        overTitle:'앗, 무너졌어요!', overSub:'쌓은 글자', bestLine:'최고 기록: {n}', again:'다시 하기' },
+  es: { tagline:'¡Suelta las letras y apílalas bien alto!', start:'Empezar', score:'PUNTOS', next:'SIGUIENTE', settings:'Ajustes', best:'Récord', sound:'Sonido', soundToggle:'Activar/desactivar sonido',
+        credits:'Créditos', view:'Ver', language:'Idioma', rotCW:'Girar en sentido horario', rotCCW:'Girar en sentido antihorario',
+        crTitle:'Créditos', crLetters:'Forma de las letras', crUi:'Fuente de la interfaz', crPhysics:'Motor de física', oflNote:' (texto completo abajo)', close:'Cerrar',
+        overTitle:'¡Uy, se derrumbó!', overSub:'Letras apiladas', bestLine:'Récord: {n}', again:'Jugar otra vez' },
+  pt: { tagline:'Solte as letras e empilhe bem alto!', start:'Começar', score:'PONTOS', next:'PRÓXIMA', settings:'Configurações', best:'Recorde', sound:'Som', soundToggle:'Ligar/desligar som',
+        credits:'Créditos', view:'Ver', language:'Idioma', rotCW:'Girar no sentido horário', rotCCW:'Girar no sentido anti-horário',
+        crTitle:'Créditos', crLetters:'Formato das letras', crUi:'Fonte da interface', crPhysics:'Motor de física', oflNote:' (texto completo abaixo)', close:'Fechar',
+        overTitle:'Ops, desabou!', overSub:'Letras empilhadas', bestLine:'Recorde: {n}', again:'Jogar de novo' },
+  fr: { tagline:'Lâchez les lettres et empilez-les le plus haut possible !', start:'Jouer', score:'SCORE', next:'SUIVANTE', settings:'Paramètres', best:'Record', sound:'Son', soundToggle:'Activer/désactiver le son',
+        credits:'Crédits', view:'Voir', language:'Langue', rotCW:'Tourner dans le sens horaire', rotCCW:'Tourner dans le sens antihoraire',
+        crTitle:'Crédits', crLetters:'Forme des lettres', crUi:'Police de l’interface', crPhysics:'Moteur physique', oflNote:' (texte intégral ci-dessous)', close:'Fermer',
+        overTitle:'Oups, tout s’est effondré !', overSub:'Lettres empilées', bestLine:'Record : {n}', again:'Rejouer' },
+  de: { tagline:'Lass die Buchstaben fallen und staple sie ganz hoch!', start:'Spielen', score:'PUNKTE', next:'NÄCHSTER', settings:'Einstellungen', best:'Rekord', sound:'Ton', soundToggle:'Ton an/aus',
+        credits:'Credits', view:'Ansehen', language:'Sprache', rotCW:'Im Uhrzeigersinn drehen', rotCCW:'Gegen den Uhrzeigersinn drehen',
+        crTitle:'Credits', crLetters:'Buchstabenformen', crUi:'Schrift der Oberfläche', crPhysics:'Physik-Engine', oflNote:' (vollständiger Text unten)', close:'Schließen',
+        overTitle:'Hoppla, umgefallen!', overSub:'Gestapelte Buchstaben', bestLine:'Rekord: {n}', again:'Nochmal spielen' },
+  it: { tagline:'Lascia cadere le lettere e impilale più in alto che puoi!', start:'Inizia', score:'PUNTI', next:'PROSSIMA', settings:'Impostazioni', best:'Record', sound:'Suono', soundToggle:'Attiva/disattiva suono',
+        credits:'Crediti', view:'Vedi', language:'Lingua', rotCW:'Ruota in senso orario', rotCCW:'Ruota in senso antiorario',
+        crTitle:'Crediti', crLetters:'Forma delle lettere', crUi:'Font dell’interfaccia', crPhysics:'Motore fisico', oflNote:' (testo completo qui sotto)', close:'Chiudi',
+        overTitle:'Ops, è crollata!', overSub:'Lettere impilate', bestLine:'Record: {n}', again:'Gioca ancora' },
+  ru: { tagline:'Роняй буквы и строй башню повыше!', start:'Играть', score:'ОЧКИ', next:'ДАЛЕЕ', settings:'Настройки', best:'Рекорд', sound:'Звук', soundToggle:'Включить/выключить звук',
+        credits:'Авторы', view:'Открыть', language:'Язык', rotCW:'Повернуть по часовой стрелке', rotCCW:'Повернуть против часовой стрелки',
+        crTitle:'Авторы', crLetters:'Форма букв', crUi:'Шрифт интерфейса', crPhysics:'Физический движок', oflNote:' (полный текст ниже)', close:'Закрыть',
+        overTitle:'Ой, всё рухнуло!', overSub:'Букв в башне', bestLine:'Рекорд: {n}', again:'Ещё раз' },
+  id: { tagline:'Jatuhkan hurufnya dan tumpuk setinggi mungkin!', start:'Mulai', score:'SKOR', next:'BERIKUTNYA', settings:'Pengaturan', best:'Rekor', sound:'Suara', soundToggle:'Nyalakan/matikan suara',
+        credits:'Kredit', view:'Lihat', language:'Bahasa', rotCW:'Putar searah jarum jam', rotCCW:'Putar berlawanan arah jarum jam',
+        crTitle:'Kredit', crLetters:'Bentuk huruf', crUi:'Font antarmuka', crPhysics:'Mesin fisika', oflNote:' (teks lengkap di bawah)', close:'Tutup',
+        overTitle:'Yah, roboh!', overSub:'Huruf yang ditumpuk', bestLine:'Rekor: {n}', again:'Main lagi' },
+  tr: { tagline:'Harfleri bırak, olabildiğince yükseğe yığ!', start:'Başla', score:'SKOR', next:'SIRADAKİ', settings:'Ayarlar', best:'Rekor', sound:'Ses', soundToggle:'Sesi aç/kapat',
+        credits:'Emeği geçenler', view:'Gör', language:'Dil', rotCW:'Saat yönünde döndür', rotCCW:'Saat yönünün tersine döndür',
+        crTitle:'Emeği geçenler', crLetters:'Harf şekilleri', crUi:'Arayüz yazı tipi', crPhysics:'Fizik motoru', oflNote:' (tam metin aşağıda)', close:'Kapat',
+        overTitle:'Eyvah, yıkıldı!', overSub:'Yığılan harf', bestLine:'Rekor: {n}', again:'Tekrar oyna' },
+  vi: { tagline:'Thả chữ xuống và xếp thật cao nào!', start:'Bắt đầu', score:'ĐIỂM', next:'TIẾP THEO', settings:'Cài đặt', best:'Kỷ lục', sound:'Âm thanh', soundToggle:'Bật/tắt âm thanh',
+        credits:'Ghi công', view:'Xem', language:'Ngôn ngữ', rotCW:'Xoay theo chiều kim đồng hồ', rotCCW:'Xoay ngược chiều kim đồng hồ',
+        crTitle:'Ghi công', crLetters:'Hình dạng chữ', crUi:'Phông chữ giao diện', crPhysics:'Công cụ vật lý', oflNote:' (toàn văn bên dưới)', close:'Đóng',
+        overTitle:'Ối, đổ mất rồi!', overSub:'Số chữ đã xếp', bestLine:'Kỷ lục: {n}', again:'Chơi lại' },
+  th: { tagline:'ปล่อยตัวอักษรลงมา แล้วซ้อนให้สูงที่สุด!', start:'เริ่ม', score:'คะแนน', next:'ถัดไป', settings:'การตั้งค่า', best:'สถิติสูงสุด', sound:'เสียง', soundToggle:'เปิด/ปิดเสียง',
+        credits:'เครดิต', view:'ดู', language:'ภาษา', rotCW:'หมุนตามเข็มนาฬิกา', rotCCW:'หมุนทวนเข็มนาฬิกา',
+        crTitle:'เครดิต', crLetters:'รูปร่างตัวอักษร', crUi:'ฟอนต์หน้าจอ', crPhysics:'เอนจินฟิสิกส์', oflNote:' (ข้อความเต็มอยู่ด้านล่าง)', close:'ปิด',
+        overTitle:'อุ๊ย พังซะแล้ว!', overSub:'ตัวอักษรที่ซ้อนได้', bestLine:'สถิติสูงสุด: {n}', again:'เล่นอีกครั้ง' }
+};
+function langFromTag(tag){
+  tag = String(tag || '').toLowerCase().replace(/_/g, '-');
+  if (!tag) return null;
+  if (tag.indexOf('zh') === 0) return /-(tw|hk|mo|hant)\b/.test(tag) ? 'zh-TW' : 'zh-CN';
+  var base = tag.split('-')[0];
+  if (base === 'in') base = 'id';
+  return I18N[base] ? base : null;
+}
+function detectLang(){
+  var saved = null;
+  try { saved = localStorage.getItem(LANG_KEY); } catch (e) { /* ignore */ }
+  if (saved && I18N[saved]) return saved;
+  var q = /[?&]lang=([a-zA-Z_-]+)/.exec(location.search);
+  if (q && langFromTag(q[1])) return langFromTag(q[1]);
+  var list = [].concat(window.HB_LANGS || [], navigator.languages || [], navigator.language || []);
+  for (var i = 0; i < list.length; i++) { var l = langFromTag(list[i]); if (l) return l; }
+  return 'en';
+}
+var LANG = detectLang();
+function t(key){ var d = I18N[LANG] || I18N.en; return (key in d) ? d[key] : I18N.en[key]; }
+function bestLineText(n){ return t('bestLine').replace('{n}', n); }
+function applyLang(code){
+  LANG = I18N[code] ? code : 'en';
+  document.documentElement.lang = LANG;
+  document.title = t('doc');
+  var txt = { scoreLabel:'score', nextLabel:'next', lblBest:'best', lblSound:'sound', lblCredits:'credits', creditsBtn:'view', lblLang:'language',
+              titleText:'title', kickerText:'kicker', tagline:'tagline', startBtn:'start', creditsTitle:'crTitle', crLetters:'crLetters', crUi:'crUi',
+              crPhysics:'crPhysics', oflNote:'oflNote', creditsClose:'close', overTitle:'overTitle', overSub:'overSub', retryBtn:'again' };
+  Object.keys(txt).forEach(function(id){ var el = document.getElementById(id); if (el) el.textContent = t(txt[id]); });
+  var kick = document.getElementById('kickerText'); if (kick) kick.style.display = t('kicker') ? '' : 'none';
+  var aria = { settingsBtn:'settings', 'toggle-switch':'soundToggle', rotateLeftBtn:'rotCW', rotateRightBtn:'rotCCW', langSelect:'language' };
+  Object.keys(aria).forEach(function(id){ var el = document.getElementById(id); if (el) el.setAttribute('aria-label', t(aria[id])); });
+  var hl = document.getElementById('highScoreLine'); if (hl) hl.textContent = bestLineText(typeof GAME !== 'undefined' ? GAME.highScore : 0);
+  var sel = document.getElementById('langSelect'); if (sel) sel.value = LANG;
+}
+(function(){
+  var sel = document.getElementById('langSelect');
+  LANGS.forEach(function(l){ var o = document.createElement('option'); o.value = l[0]; o.textContent = l[1]; sel.appendChild(o); });
+  sel.addEventListener('change', function(){
+    try { localStorage.setItem(LANG_KEY, sel.value); } catch (e) { /* ignore */ }
+    applyLang(sel.value);
+  });
+  applyLang(LANG);
+})();
 var KANA = CHAR_DATA.map(function(d){ return d.ch; });
 var ROMAJI = {}; // Hepburn reading shown under the held letter (を = wo so it differs from お)
 ('a i u e o ka ki ku ke ko sa shi su se so ta chi tsu te to na ni nu ne no ha hi fu he ho ' +
@@ -1133,7 +1265,7 @@ function showGameOver(){
   GAME.gameOver = true;
   if (GAME.score > GAME.highScore) { GAME.highScore = GAME.score; saveHighScore(GAME.highScore); }
   document.getElementById('finalScore').textContent = GAME.score;
-  document.getElementById('highScoreLine').textContent = 'Best: ' + GAME.highScore;
+  document.getElementById('highScoreLine').textContent = bestLineText(GAME.highScore);
   updatePanelBestScore();
   document.getElementById('overOverlay').classList.remove('hidden');
 }
@@ -1630,7 +1762,7 @@ function render(){
     ctx.translate(-cache.pathCx, -cache.pathCy);
     fillGlyph(ctx, cache, '#3a332c');
     ctx.restore();
-    if (!pointerDown && !GAME.gameOver && ROMAJI[currentPiece.ch]) {
+    if (!pointerDown && !GAME.gameOver && LANG !== 'ja' && ROMAJI[currentPiece.ch]) {
       ctx.save();
       ctx.font = '600 14px "Klee One", "Hiragino Mincho ProN", "Yu Mincho", serif';
       ctx.textAlign = 'center'; ctx.textBaseline = 'top';

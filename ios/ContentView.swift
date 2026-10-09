@@ -1,6 +1,7 @@
 // ひらがなバランス — iOS ラッパー (Swift Playground / SwiftUI)
 // ゲーム本体 (index.html) を「hiragana-balance.html」という名前で
 // アプリのリソースに追加して使う。最高記録は WKWebView の localStorage に残る。
+// 画面の言語は、端末の言語の設定に合わせて自動で切り替わる。
 
 import SwiftUI
 import WebKit
@@ -17,6 +18,14 @@ struct GameWebView: UIViewRepresentable {
         let config = WKWebViewConfiguration()
         config.allowsInlineMediaPlayback = true
         config.mediaTypesRequiringUserActionForPlayback = []
+
+        // 端末の言語をゲームに渡す（WKWebView の navigator.language は英語のままになることがあるため）
+        let langs = (try? JSONSerialization.data(withJSONObject: Locale.preferredLanguages))
+            .flatMap { String(data: $0, encoding: .utf8) } ?? "[]"
+        config.userContentController.addUserScript(WKUserScript(
+            source: "window.HB_LANGS = \(langs);",
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: true))
 
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.isOpaque = false
