@@ -207,13 +207,29 @@
   html[lang="vi"] body, html[lang="tr"] body{ font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; }
   .panel .over-title{ font-size:18px; font-weight:600; color:var(--sumi); margin-bottom:6px; }
   .panel .kicker{ font-size:12px; letter-spacing:.3em; padding-left:.3em; color:#8a7860; margin:0 0 4px; }
+  #scoreWrap{ position:relative; }
+  #scoreVal.pop{ animation:scorePop .32s ease-out; }
+  @keyframes scorePop{ 0%{ transform:scale(1); } 40%{ transform:scale(1.22); } 100%{ transform:scale(1); } }
+  #hanamaru{ position:absolute; left:50%; top:50%; width:84px; height:84px; margin:-34px 0 0 -42px; pointer-events:none; opacity:0; overflow:visible; }
+  #hanamaru path{ fill:none; stroke:#d2433a; stroke-width:3.2; stroke-linecap:round; stroke-linejoin:round; }
+  #hanamaru.show{ animation:hanaFade 2.4s ease-out forwards; }
+  #hanamaru.show path{ animation:hanaDraw .75s ease-out forwards; }
+  @keyframes hanaDraw{ from{ stroke-dashoffset:var(--len); } to{ stroke-dashoffset:0; } }
+  @keyframes hanaFade{ 0%{ opacity:.95; } 70%{ opacity:.95; } 100%{ opacity:0; } }
+  #stage-wrap.shake{ animation:stageShake .5s linear; }
+  @keyframes stageShake{
+    0%,100%{ transform:translate(0,0); } 10%{ transform:translate(-6px,2px) rotate(-.6deg); } 20%{ transform:translate(5px,-3px) rotate(.5deg); }
+    30%{ transform:translate(-5px,1px); } 40%{ transform:translate(4px,2px) rotate(.3deg); } 55%{ transform:translate(-3px,-1px); }
+    70%{ transform:translate(2px,1px); } 85%{ transform:translate(-1px,0); }
+  }
+  html.skin-pending #startOverlay .panel{ visibility:hidden; }
 </style>
 </head>
 <body>
 <div id="stage-wrap">
   <canvas id="gameCanvas"></canvas>
   <div id="hud">
-    <div id="scoreWrap"><span id="scoreLabel">SCORE</span><div id="scoreVal">0</div></div>
+    <div id="scoreWrap"><span id="scoreLabel">SCORE</span><div id="scoreVal">0</div><svg id="hanamaru" viewBox="0 0 100 100" aria-hidden="true"><path d=""/></svg></div>
     <div id="nextWrap"><span id="nextLabel">NEXT</span><div id="nextGlyph"></div></div>
   </div>
   <div id="settingsBtn" aria-label="Settings"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="#3a332c"><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(0 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(45 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(90 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(135 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(180 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(225 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(270 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(315 12 12)"/><circle cx="12" cy="12" r="7.2"/></g><circle cx="12" cy="12" r="2.9" fill="#fffaf1"/></svg></div>
@@ -391,6 +407,34 @@ var canvas = document.getElementById('gameCanvas');
 var ctx = canvas.getContext('2d');
 var DPR = Math.min(window.devicePixelRatio || 1, 2);
 
+// ---- skin: only when the page is opened with ?skin=<name> (used by the asobi-talk game center).
+// Pictures live next to the game file (skins/<name>/); without a skin everything is drawn in code ----
+var SKIN_ART = {};
+(function loadSkin(){
+  var m = /[?&]skin=([a-z0-9-]{1,24})(?:&|$)/.exec(location.search || '');
+  if (!m || !window.fetch) return;
+  var base = 'skins/' + m[1] + '/', root = document.documentElement;
+  root.classList.add('skin-pending');
+  var done = function(){ root.classList.remove('skin-pending'); };
+  setTimeout(done, 2500);
+  fetch(base + 'skin.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(cfg){
+    if (!cfg) { done(); return; }
+    root.classList.add('skin', 'skin-' + m[1]);
+    document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+    if (cfg.css) {
+      var link = document.createElement('link');
+      link.rel = 'stylesheet'; link.href = base + cfg.css; link.onload = link.onerror = done;
+      document.head.appendChild(link);
+    } else done();
+    ['desk', 'ruler'].forEach(function(k){
+      if (!cfg[k] || !cfg[k].src) return;
+      var img = new Image();
+      img.onload = function(){ var o = {}; for (var p in cfg[k]) o[p] = cfg[k][p]; o.img = img; SKIN_ART[k] = o; };
+      img.src = base + cfg[k].src;
+    });
+  }).catch(done);
+})();
+
 var W, H, groundY, platformW, platformCX, platformLeft, platformRight, VOID_Y;
 var platformBody = null; // declared early so layout() can sync it on resize, once it exists
 var pieces = []; // { body, ch, r } — declared early so layout() can shift settled pieces on resize
@@ -562,6 +606,54 @@ function fillGlyph(c, cache, color){
   c.fillStyle = color; c.fill(cache.path2d);
   c.strokeStyle = color; c.lineJoin = 'round'; c.lineCap = 'round';
   c.lineWidth = 2 * GLYPH_BOLD * cache.pathScale; c.stroke(cache.path2d);
+}
+// ---- ink look: each letter (per size) is drawn once into a small picture with a soft edge, a light paper
+// grain and a separate blurred shadow, then the pictures are reused every frame (cheaper than path fills) ----
+var INK = '#2d2722';
+var spriteCache = {};
+var grainCanvas = null;
+function grain(){
+  if (grainCanvas) return grainCanvas;
+  var g = document.createElement('canvas'); g.width = g.height = 96;
+  var c = g.getContext('2d'), img = c.createImageData(96, 96), seed = 12345;
+  for (var i = 0; i < img.data.length; i += 4) {
+    seed = (seed * 16807) % 2147483647; var v = seed / 2147483647;
+    img.data[i] = 250; img.data[i + 1] = 244; img.data[i + 2] = 232;
+    img.data[i + 3] = v > 0.94 ? Math.round((v - 0.94) / 0.06 * 26) : 0;
+  }
+  c.putImageData(img, 0, 0);
+  return (grainCanvas = g);
+}
+function glyphSprites(ch, r){
+  var key = ch + '|' + r + '|' + DPR;
+  if (spriteCache[key]) return spriteCache[key];
+  var cache = charCache[ch];
+  var E = Math.ceil(glyphRadius(ch) * r + 10); // half size in css px (glyph + bleed + blur room)
+  var px = Math.ceil(2 * E * DPR), s = r / cache.pathScale;
+  function place(c, dx){ c.setTransform(DPR, 0, 0, DPR, (E + dx) * DPR, E * DPR); c.scale(s, -s); c.translate(-cache.pathCx, -cache.pathCy); }
+  // body: ink with a slightly soft edge and a faint dry-brush grain
+  var body = document.createElement('canvas'); body.width = body.height = px;
+  var b = body.getContext('2d');
+  place(b, 0);
+  b.shadowColor = 'rgba(45,39,34,0.55)'; b.shadowBlur = 1.4 * DPR;
+  fillGlyph(b, cache, INK);
+  b.shadowColor = 'transparent'; b.shadowBlur = 0;
+  b.setTransform(1, 0, 0, 1, 0, 0);
+  b.globalCompositeOperation = 'source-atop';
+  b.fillStyle = b.createPattern(grain(), 'repeat'); b.fillRect(0, 0, px, px);
+  var sheen = b.createLinearGradient(0, 0, px, px);
+  sheen.addColorStop(0, 'rgba(255,248,236,0.10)'); sheen.addColorStop(0.5, 'rgba(255,248,236,0)'); sheen.addColorStop(1, 'rgba(0,0,0,0.10)');
+  b.fillStyle = sheen; b.fillRect(0, 0, px, px);
+  // shadow: drawn far to the left, only its blurred shadow lands inside the picture
+  var sh = document.createElement('canvas'); sh.width = sh.height = px;
+  var c2 = sh.getContext('2d');
+  place(c2, -4000);
+  c2.shadowColor = 'rgba(60,40,22,1)'; c2.shadowBlur = 5 * DPR; c2.shadowOffsetX = 4000 * DPR;
+  fillGlyph(c2, cache, '#000');
+  return (spriteCache[key] = { body: body, shadow: sh, E: E });
+}
+function drawSprite(img, x, y, angle, E){
+  ctx.save(); ctx.translate(x, y); ctx.rotate(angle); ctx.drawImage(img, -E, -E, 2 * E, 2 * E); ctx.restore();
 }
 function randomSize(){ return Math.random() < 0.5 ? 'L' : 'S'; } // nominal "radius" (half of on-screen size) for a freshly spawned piece, matching the original game's feel
 
@@ -914,6 +1006,86 @@ function resolveSeamJams(list){
 }
 var sweepIndex = 0;
 var ANGULAR_DAMPING = 0.03;
+// little ink drops where a dropped letter first lands (looks only; does not touch the physics)
+var FX = { drops: [], puffs: [] };
+Events.on(engine, 'collisionStart', function(ev){
+  if (!activePieceObj || activePieceObj.__landed) return;
+  var ap = activePieceObj.body;
+  for (var i = 0; i < ev.pairs.length; i++) {
+    var p = ev.pairs[i];
+    if (p.bodyA.parent !== ap && p.bodyB.parent !== ap) continue;
+    activePieceObj.__landed = true;
+    var speed = Math.hypot(ap.velocity.x, ap.velocity.y);
+    if (speed < 0.6) return;
+    var col = p.collision, x = ap.position.x, y = ap.bounds.max.y;
+    if (col && col.supportCount > 0) {
+      x = 0; y = 0;
+      for (var k = 0; k < col.supportCount; k++) { x += col.supports[k].x; y += col.supports[k].y; }
+      x /= col.supportCount; y /= col.supportCount;
+    }
+    spawnSplash(x, y, Math.min(1, speed / 2.2));
+    return;
+  }
+});
+function spawnSplash(x, y, power){
+  var n = 6 + Math.round(power * 8);
+  for (var i = 0; i < n; i++) {
+    var dir = (Math.random() < 0.5 ? -1 : 1);
+    FX.drops.push({ x: x + (Math.random() - 0.5) * 10, y: y - 1, vx: dir * (0.5 + Math.random() * 1.6) * (0.6 + power),
+      vy: -(0.8 + Math.random() * 2.4) * (0.5 + power), r: 0.9 + Math.random() * 1.9, life: 1 });
+  }
+  FX.puffs.push({ x: x, y: y, t: 0, w: 14 + power * 18 });
+}
+function updateFx(){
+  for (var i = FX.drops.length - 1; i >= 0; i--) {
+    var d = FX.drops[i];
+    d.vy += 0.2; d.x += d.vx; d.y += d.vy; d.life -= 0.035;
+    if (d.life <= 0) FX.drops.splice(i, 1);
+  }
+  for (var j = FX.puffs.length - 1; j >= 0; j--) { FX.puffs[j].t += 1 / 22; if (FX.puffs[j].t >= 1) FX.puffs.splice(j, 1); }
+}
+function drawFx(){
+  ctx.save();
+  FX.puffs.forEach(function(p){
+    ctx.globalAlpha = 0.28 * (1 - p.t);
+    ctx.strokeStyle = '#8a7a66'; ctx.lineWidth = 1.2;
+    var w = p.w * (0.5 + p.t);
+    ctx.beginPath(); ctx.ellipse(p.x, p.y, w, w * 0.22, 0, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+  });
+  ctx.fillStyle = INK;
+  FX.drops.forEach(function(d){
+    ctx.globalAlpha = Math.min(1, 1.6 * d.life);
+    ctx.beginPath(); ctx.arc(d.x, d.y, d.r * (0.6 + 0.4 * d.life), 0, Math.PI * 2); ctx.fill();
+  });
+  ctx.restore();
+}
+
+// ---- hanamaru (red-pen flower circle) on the score every 10 letters ----
+(function buildHanamaru(){
+  var pts = [], cx = 50, cy = 50, R = 34, a = 8, k = 7, start = -Math.PI / 2 - 0.25, t;
+  for (t = 0; t <= Math.PI * 2.12; t += 0.02) {
+    var u = start + t;
+    pts.push([cx + R * Math.cos(u) + a * Math.cos(k * u + Math.PI * 0.5), cy + R * Math.sin(u) + a * Math.sin(k * u + Math.PI * 0.5)]);
+  }
+  var d = 'M' + pts.map(function(p){ return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L');
+  var path = document.querySelector('#hanamaru path');
+  if (path) {
+    path.setAttribute('d', d);
+    var len = 0; for (var i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+    path.style.setProperty('--len', Math.ceil(len));
+    path.style.strokeDasharray = Math.ceil(len); path.style.strokeDashoffset = Math.ceil(len);
+  }
+})();
+function celebrateScore(score){
+  var sv = document.getElementById('scoreVal');
+  sv.classList.remove('pop'); void sv.offsetWidth; sv.classList.add('pop');
+  if (score > 0 && score % 10 === 0) {
+    var h = document.getElementById('hanamaru');
+    if (h) { h.classList.remove('show'); void h.getBoundingClientRect(); h.classList.add('show'); }
+    sfxHanamaru();
+  }
+}
+
 Events.on(engine, 'beforeUpdate', function(){
   var bodies = Composite.allBodies(world);
   var angD = ANGULAR_DAMPING;
@@ -1267,7 +1439,10 @@ function showGameOver(){
   document.getElementById('finalScore').textContent = GAME.score;
   document.getElementById('highScoreLine').textContent = bestLineText(GAME.highScore);
   updatePanelBestScore();
-  document.getElementById('overOverlay').classList.remove('hidden');
+  var wrap = document.getElementById('stage-wrap');
+  wrap.classList.remove('shake'); void wrap.offsetWidth; wrap.classList.add('shake');
+  clearTimeout(overTimer);
+  overTimer = setTimeout(function(){ document.getElementById('overOverlay').classList.remove('hidden'); }, 650);
   // 別のページの中（あそびトークのゲームセンターなど）で遊んでいるときは、外のページにスコアを知らせる
   try {
     if (window.parent && window.parent !== window) {
@@ -1275,6 +1450,7 @@ function showGameOver(){
     }
   } catch (e) { /* ignore */ }
 }
+var overTimer = null;
 function updatePanelBestScore(){
   var el = document.getElementById('panel-best-score');
   if (el) el.textContent = GAME.highScore;
@@ -1285,6 +1461,9 @@ function resetGame(){
   pieces = [];
   GAME.score = 0;
   GAME.gameOver = false;
+  clearTimeout(overTimer);
+  document.getElementById('stage-wrap').classList.remove('shake');
+  FX.drops = []; FX.puffs = [];
   document.getElementById('scoreVal').textContent = '0';
   document.getElementById('overOverlay').classList.add('hidden');
   GAME.nextChar = randomChar(); GAME.nextSize = randomSize();
@@ -1481,6 +1660,7 @@ function playTone(freqStart, freqEnd, duration, volume, waveType){
 function sfxGrab(){ playTone(520, 720, 0.11, 0.16, 'sine'); }
 function sfxRotate(){ playTone(650, 520, 0.09, 0.11, 'triangle'); }
 function sfxButton(){ playTone(480, 380, 0.08, 0.13, 'sine'); }
+function sfxHanamaru(){ playTone(784, 1046, 0.12, 0.10, 'sine'); setTimeout(function(){ playTone(1046, 1318, 0.16, 0.09, 'sine'); }, 110); }
 
 // ---------- background music (embedded, compressed audio file) ----------
 var MUTE_KEY = 'hiraganaTowerBattle.muted';
@@ -1654,6 +1834,7 @@ function frame(ts){
         activePieceObj = null;
         GAME.score++;
         document.getElementById('scoreVal').textContent = GAME.score;
+        celebrateScore(GAME.score);
         spawnCurrentPiece();
       }
     }
@@ -1667,17 +1848,15 @@ function frame(ts){
   render();
 }
 
+function drawGlyphShadow(pieceObj){
+  var sp = glyphSprites(pieceObj.ch, pieceObj.r), b = pieceObj.body;
+  ctx.globalAlpha = 0.24;
+  drawSprite(sp.shadow, b.position.x + 2, b.position.y + 4, b.angle, sp.E);
+  ctx.globalAlpha = 1;
+}
 function drawGlyphBody(pieceObj){
-  var cache = charCache[pieceObj.ch];
-  var b = pieceObj.body;
-  ctx.save();
-  ctx.translate(b.position.x, b.position.y);
-  ctx.rotate(b.angle);
-  var s = pieceObj.r / cache.pathScale;
-  ctx.scale(s, -s); // flip y: font space is y-up, canvas is y-down
-  ctx.translate(-cache.pathCx, -cache.pathCy);
-  fillGlyph(ctx, cache, '#3a332c');
-  ctx.restore();
+  var sp = glyphSprites(pieceObj.ch, pieceObj.r), b = pieceObj.body;
+  drawSprite(sp.body, b.position.x, b.position.y, b.angle, sp.E);
 }
 
 function roundRectPath(c, x, y, w, h, r){
@@ -1706,6 +1885,28 @@ function drawRuler(y0){
     var len = i % 10 === 0 ? 7 : (i % 5 === 0 ? 5 : 3);
     ctx.beginPath(); ctx.moveTo(x + 0.5, y0 + 0.5); ctx.lineTo(x + 0.5, y0 + len); ctx.stroke();
     if (i % 10 === 0 && i > 0 && x < x1 - 10) ctx.fillText(String(i / 10), x + 0.5, y0 + rh - 3.5);
+  }
+  ctx.restore();
+}
+function drawSkinDesk(x, y, w){
+  var d = SKIN_ART.desk, sc = w / (d.x1 - d.x0);
+  ctx.drawImage(d.img, x - d.x0 * sc, y - d.top * sc, d.img.width * sc, d.img.height * sc);
+}
+function drawSkinRuler(y0){
+  var x0 = 7, x1 = W - 7, rh = SKIN_ART.ruler.h || 15, w = x1 - x0;
+  ctx.save();
+  ctx.globalAlpha = 0.16; ctx.fillStyle = '#3a2a1a';
+  roundRectPath(ctx, x0 + 1.5, y0 + 3, w, rh, 3); ctx.fill();
+  ctx.globalAlpha = SKIN_ART.ruler.alpha || 0.9;
+  ctx.drawImage(SKIN_ART.ruler.img, x0, y0, w, rh);
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = 'rgba(58,40,24,0.55)'; ctx.lineWidth = 0.8; ctx.fillStyle = 'rgba(58,40,24,0.62)';
+  ctx.font = '600 7px "Klee One", "Hiragino Mincho ProN", serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+  for (var i = 0, x = x0 + 6; x < x1 - 4; i++, x += 4) {
+    var len = i % 10 === 0 ? 7 : (i % 5 === 0 ? 5 : 3);
+    ctx.beginPath(); ctx.moveTo(x + 0.5, y0 + 1); ctx.lineTo(x + 0.5, y0 + 1 + len); ctx.stroke();
+    if (i % 10 === 0 && i > 0 && x < x1 - 10) ctx.fillText(String(i / 10), x + 0.5, y0 + rh - 3);
   }
   ctx.restore();
 }
@@ -1746,28 +1947,28 @@ function render(){
   ctx.save();
   ctx.translate(0, camY); // world layer (platform + pieces) scrolls with the camera
 
-  drawDesk(platformLeft, groundY, platformW, 28); // looks like a school desk; physics is the plain 28px-tall slab
+  if (SKIN_ART.desk) drawSkinDesk(platformLeft, groundY, platformW);
+  else drawDesk(platformLeft, groundY, platformW, 28); // looks like a school desk; physics is the plain 28px-tall slab
 
+  pieces.forEach(drawGlyphShadow);
   pieces.forEach(drawGlyphBody);
+  updateFx();
+  drawFx();
 
   ctx.restore(); // back to screen space: regulation line + held piece
 
   if (currentPiece && pieces.length > 0) {
     var edgeY = dragYRange().max + pieceLowestOffset(currentPiece.ch, currentPiece.angle, currentPiece.r);
-    drawRuler(edgeY);
+    if (SKIN_ART.ruler) drawSkinRuler(edgeY); else drawRuler(edgeY);
   }
 
   if (currentPiece) {
-    ctx.save();
-    ctx.globalAlpha = 0.9;
-    var cache = charCache[currentPiece.ch];
-    ctx.translate(currentPiece.x, currentPiece.y);
-    ctx.rotate(currentPiece.angle);
-    var s2 = currentPiece.r / cache.pathScale;
-    ctx.scale(s2, -s2);
-    ctx.translate(-cache.pathCx, -cache.pathCy);
-    fillGlyph(ctx, cache, '#3a332c');
-    ctx.restore();
+    var hsp = glyphSprites(currentPiece.ch, currentPiece.r);
+    ctx.globalAlpha = 0.13; // held up: a faint shadow further away
+    drawSprite(hsp.shadow, currentPiece.x + 5, currentPiece.y + 10, currentPiece.angle, hsp.E);
+    ctx.globalAlpha = 0.92;
+    drawSprite(hsp.body, currentPiece.x, currentPiece.y, currentPiece.angle, hsp.E);
+    ctx.globalAlpha = 1;
     if (!pointerDown && !GAME.gameOver && LANG !== 'ja' && ROMAJI[currentPiece.ch]) {
       ctx.save();
       ctx.font = '600 14px "Klee One", "Hiragino Mincho ProN", "Yu Mincho", serif';

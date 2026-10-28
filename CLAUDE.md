@@ -34,6 +34,14 @@
 - iframe の中で遊んでいるときは、ゲームオーバーで `parent.postMessage({ source: 'hiragana-balance', type: 'gameover', score, best }, '*')` を送る。あそびトークのゲームセンター（`juice0402/asobi-talk` の `public/games-static/balance.html`）がこれを受けてメダルを記録する。
 - ゲームを直したら、あそびトークの `public/games-static/balance.html` にも同じファイルを入れる（自動ではコピーされない）。
 
+## 見た目の演出（全部の版）
+- 文字は 1 文字×大きさごとに「墨の絵」と「ぼかした影」を小さな canvas に作って使い回す（`glyphSprites`）。影は全部の文字を先に描いてから本体。
+- 落とした文字が最初にふれたとき墨のしずくが飛ぶ（`collisionStart` を見るだけ。物理は変えない）。10 文字ごとにスコアに赤ペンの花丸（`#hanamaru`）。ゲームオーバーは画面がゆれてから 0.65 秒後にカード。
+
+## スキン（あそびトークのゲーム工房だけ）
+- `?skin=<名前>` のときだけ、ゲームのファイルと同じ場所の `skins/<名前>/skin.json` を読む（`css`・`desk`（机の絵と天板の位置 `x0`/`x1`/`top`）・`ruler`）。ないときは今までどおりコードで描く。
+- Canva の絵はライセンス上、itch.io と iOS のファイルには入れない。絵はあそびトークの `public/games-static/skins/kobo/` に置く（1 枚 48 万ピクセル以下・保存やダウンロードの機能は付けない）。
+
 ## 保存データ
 - 最高記録の localStorage キーは `hiraganaTowerBattle.highScore`、ミュートは `hiraganaTowerBattle.muted`。旧名のままだが、既存プレイヤーの記録が消えるので変更しないこと。
 
