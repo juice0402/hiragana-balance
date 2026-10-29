@@ -1660,6 +1660,21 @@ function playTone(freqStart, freqEnd, duration, volume, waveType){
 function sfxGrab(){ playTone(520, 720, 0.11, 0.16, 'sine'); }
 function sfxRotate(){ playTone(650, 520, 0.09, 0.11, 'triangle'); }
 function sfxButton(){ playTone(480, 380, 0.08, 0.13, 'sine'); }
+// メダルの音（あそびトークがメダルを記録したとき、外のページから知らせが来る。外のページは音を出す許可がないことがあるので、ここで鳴らす）
+function sfxCoin(k){ playTone(988 * k, 988 * k, 0.07, 0.07, 'square'); setTimeout(function(){ playTone(1319 * k, 1319 * k, 0.34, 0.06, 'square'); }, 70); }
+function sfxMedals(n){
+  n = Math.max(1, Math.min(10, Math.floor(+n) || 1));
+  var gap = n >= 6 ? 95 : 120; // 外のページの数えあげと同じ間かく
+  for (var i = 0; i < n; i++) (function(i){ setTimeout(function(){ sfxCoin(1 + i * 0.03); }, i * gap); })(i);
+  var end = n * gap + 120;
+  if (n >= 3) [1046, 1318, 1568, 2093].forEach(function(f, k){ setTimeout(function(){ playTone(f, f, 0.24, 0.08, 'triangle'); }, end + k * 70); });
+  if (n >= 10) [1568, 2093, 2637, 3136].forEach(function(f, k){ setTimeout(function(){ playTone(f, f * 1.01, 0.45, 0.07, 'triangle'); }, end + 420 + k * 90); });
+}
+window.addEventListener('message', function(e){
+  var d = e.data;
+  if (window.parent === window || e.source !== window.parent || e.origin !== location.origin) return;
+  if (d && d.source === 'asobi-talk' && d.type === 'medals') sfxMedals(d.n);
+});
 function sfxHanamaru(){ playTone(784, 1046, 0.12, 0.10, 'sine'); setTimeout(function(){ playTone(1046, 1318, 0.16, 0.09, 'sine'); }, 110); }
 
 // ---------- background music (embedded, compressed audio file) ----------
