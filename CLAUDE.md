@@ -33,6 +33,7 @@
 ## ほかのページへの埋め込み
 - iframe の中で遊んでいるときは、ゲームオーバーで `parent.postMessage({ source: 'hiragana-balance', type: 'gameover', score, best }, '*')` を送る。あそびトークのゲームセンター（`juice0402/asobi-talk` の `public/games-static/balance.html`）がこれを受けてメダルを記録する。
 - ゲームを直したら、あそびトークの `public/games-static/balance.html` にも同じファイルを入れる（自動ではコピーされない）。
+- 逆向き: 同じオリジンの親から `{ source: 'asobi-talk', type: 'medals', n }` が来たら、メダルのチャリーンの音（`sfxMedals`）。画面の演出は親（あそびトークの `public/game/medal-fx.js`）が出す。
 
 ## 見た目の演出（全部の版）
 - 文字は 1 文字×大きさごとに「墨の絵」と「ぼかした影」を小さな canvas に作って使い回す（`glyphSprites`）。影は全部の文字を先に描いてから本体。
