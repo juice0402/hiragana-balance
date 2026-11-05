@@ -7,7 +7,8 @@
 - `index.html` はリリース版（デバッグ用フック・計測コードは削除済み）。変更はこのファイルに直接入れる。
 - 個人情報（本名・住所・電話番号・生年月日・メールアドレスなど）はリポジトリに絶対に入れない。
 - `main` の `index.html` が更新されると、GitHub Actions（`.github/workflows/itch-deploy.yml`）が itch.io に自動でアップロードする（Secrets の `BUTLER_API_KEY` が必要）。つまり **main に push = 世界に公開**。作業は別ブランチで進め、プレビューでユーザーの OK をもらってから main に入れる。
-- iOS（`hiragana-balance.html` にリネームして同梱）は自動では更新されないので、変更したらユーザーに伝える。
+- iOS 版は juice0402/ios-kobo で組み立てる（`apps/hiragana-balance/app.json` の `game.ref` にこのリポジトリのコミットを書いて Actions を動かす）。自動では更新されないので、変更したらユーザーに伝える。`ios/ContentView.swift` は旧版（Swift Playground）。
+- iOS アプリは iPad で画面を拡大するとき `window.APP_ZOOM` を入れる（キャンバスの解像度に掛けている）。
 
 ## ファイル内の構成（index.html）
 - `<script>` 1 つ目: Matter.js 0.20.0（minified）。2 つ目: poly-decomp。

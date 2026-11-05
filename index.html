@@ -405,7 +405,7 @@ if (typeof decomp !== 'undefined') { Matter.Common.setDecomp(decomp); }
 // ---- canvas / responsive sizing (mirrors the original game's layout) ----
 var canvas = document.getElementById('gameCanvas');
 var ctx = canvas.getContext('2d');
-var DPR = Math.min(window.devicePixelRatio || 1, 2);
+var DPR = Math.min(window.devicePixelRatio || 1, 2) * Math.min(window.APP_ZOOM || 1, 2.5); // APP_ZOOM: the iOS app enlarges the page on iPad
 
 // ---- skin: only when the page is opened with ?skin=<name> (used by the asobi-talk game center).
 // Pictures live next to the game file (skins/<name>/); without a skin everything is drawn in code ----
