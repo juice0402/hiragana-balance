@@ -42,7 +42,9 @@
 
 ## スキン（あそびトークのゲーム工房だけ）
 - `?skin=<名前>` のときだけ、ゲームのファイルと同じ場所の `skins/<名前>/skin.json` を読む（`css`・`desk`（机の絵と天板の位置 `x0`/`x1`/`top`）・`ruler`）。ないときは今までどおりコードで描く。
-- Canva の絵はライセンス上、itch.io と iOS のファイルには入れない。絵はあそびトークの `public/games-static/skins/kobo/` に置く（1 枚 48 万ピクセル以下・保存やダウンロードの機能は付けない）。
+- 絵の決まりはプロジェクトの claude/game-art-rule.md（A：Canva の AI で言葉から作った絵・C：コードの絵などはアプリにも入れてよい。B：ライブラリの素材は入れない）。工房の絵 `skins/kobo/` は全部 A（11/6 確認）なので iOS アプリにも入れる。あそびトークの `public/games-static/skins/kobo/` は向こうのコピー（タイトルの絵は 560x840 のまま。こちらは 1200x1800）。
+- iOS アプリは `window.APP_SKIN = { name, cfg }` でスキンを渡す（ファイルのページでは skin.json を fetch できないため）。
+- iOS アプリのスマホ（`APP_PLATFORM='ios'` で拡大しないとき）は画面いっぱい（`html.full`）。上の切り欠き・下のバーは env(safe-area-inset-*) でよける（`viewport-fit=cover` はアプリのときだけ足す）。iPad は `#stage-wrap` を CSS の transform で拡大（`ZOOM`）。
 
 ## 保存データ
 - 最高記録の localStorage キーは `hiraganaTowerBattle.highScore`、ミュートは `hiraganaTowerBattle.muted`。旧名のままだが、既存プレイヤーの記録が消えるので変更しないこと。

@@ -68,3 +68,6 @@ html.skin #toggle-switch .thumb{ border:0; top:3px; left:3px; width:18px; height
 html.skin #toggle-switch.is-on{ background:#86a77f; }
 html.skin #toggle-switch.is-on .thumb{ left:21px; }
 html.skin #creditsBtn, html.skin #langSelect{ border:1px solid #bba98c; border-radius:8px; background:#fffdf7; }
+
+/* iOS アプリのスマホ（html.full。画面いっぱい）：タイトルの絵を横いっぱいにして、上と下は絵のはしの色でつなぐ */
+html.full.skin #startOverlay{ background:url(title.webp) center 40% / 100% auto no-repeat, linear-gradient(#c5a87d, #ad8e66); padding-bottom:calc(7% + var(--sab, 0px)); }

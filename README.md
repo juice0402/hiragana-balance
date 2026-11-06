@@ -38,5 +38,6 @@
 | Matter.js 0.20.0（物理エンジン） | Liam Brummitt and contributors | MIT License |
 | poly-decomp.js（多角形の分割） | Stefan Hedman | MIT License |
 | BGM | このゲームのオリジナル（ゲームの中で Web Audio で作曲・合成） | — |
+| 工房の絵（`skins/kobo/`。あそびトークと iOS アプリ） | Canva の AI で作った絵（作者のもの） | — |
 
 ゲーム内の「クレジット」画面にも同じ内容を載せています。
