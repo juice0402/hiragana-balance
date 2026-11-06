@@ -33,6 +33,7 @@
     font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
   }
   #stage-wrap{ position:relative; }
+  #stage-wrap.zoomed{ transform:scale(var(--z)); } /* iOS アプリの広い画面（iPad）だけ、ゲームごと大きくする */
   #gameCanvas{
     display:block; border-radius:18px; border:3px solid var(--sumi);
     background: linear-gradient(180deg,#fffaf1 0%, #f6ead6 100%);
@@ -218,9 +219,9 @@
   @keyframes hanaFade{ 0%{ opacity:.95; } 70%{ opacity:.95; } 100%{ opacity:0; } }
   #stage-wrap.shake{ animation:stageShake .5s linear; }
   @keyframes stageShake{
-    0%,100%{ transform:translate(0,0); } 10%{ transform:translate(-6px,2px) rotate(-.6deg); } 20%{ transform:translate(5px,-3px) rotate(.5deg); }
-    30%{ transform:translate(-5px,1px); } 40%{ transform:translate(4px,2px) rotate(.3deg); } 55%{ transform:translate(-3px,-1px); }
-    70%{ transform:translate(2px,1px); } 85%{ transform:translate(-1px,0); }
+    0%,100%{ transform:scale(var(--z,1)) translate(0,0); } 10%{ transform:scale(var(--z,1)) translate(-6px,2px) rotate(-.6deg); } 20%{ transform:scale(var(--z,1)) translate(5px,-3px) rotate(.5deg); }
+    30%{ transform:scale(var(--z,1)) translate(-5px,1px); } 40%{ transform:scale(var(--z,1)) translate(4px,2px) rotate(.3deg); } 55%{ transform:scale(var(--z,1)) translate(-3px,-1px); }
+    70%{ transform:scale(var(--z,1)) translate(2px,1px); } 85%{ transform:scale(var(--z,1)) translate(-1px,0); }
   }
   html.skin-pending #startOverlay .panel{ visibility:hidden; }
 </style>
@@ -405,7 +406,15 @@ if (typeof decomp !== 'undefined') { Matter.Common.setDecomp(decomp); }
 // ---- canvas / responsive sizing (mirrors the original game's layout) ----
 var canvas = document.getElementById('gameCanvas');
 var ctx = canvas.getContext('2d');
-var DPR = Math.min(window.devicePixelRatio || 1, 2) * Math.min(window.APP_ZOOM || 1, 2.5); // APP_ZOOM: the iOS app enlarges the page on iPad
+var BASE_DPR = Math.min(window.devicePixelRatio || 1, 2);
+var ZOOM = 1;            // > 1 only in the iOS app on a wide screen (iPad): the whole stage is scaled up with a CSS transform
+var DPR = BASE_DPR;      // canvas pixels per CSS px (times ZOOM so the enlarged canvas stays sharp)
+// iOS アプリで画面が広いとき（iPad）だけ、ゲームを画面いっぱいまで大きくする。ブラウザ・iPhone は 1
+function appZoom(vw, vh){
+  if (window.APP_PLATFORM !== 'ios') return 1;
+  var z = Math.min(vw / 424, vh / 644);
+  return z > 1.15 ? Math.floor(Math.min(z, 2.5) * 20) / 20 : 1;
+}
 
 // ---- skin: only when the page is opened with ?skin=<name> (used by the asobi-talk game center).
 // Pictures live next to the game file (skins/<name>/); without a skin everything is drawn in code ----
@@ -442,8 +451,14 @@ var currentPiece = null; // { ch, x, y, angle } — declared early so layout() c
 
 function layout(){
   var vv = window.visualViewport;
-  var availW = (vv ? vv.width : window.innerWidth) - 24;
-  var availH = (vv ? vv.height : window.innerHeight) - 24;
+  var vw = vv ? vv.width : window.innerWidth, vh = vv ? vv.height : window.innerHeight;
+  ZOOM = appZoom(vw, vh);
+  DPR = BASE_DPR * ZOOM;
+  var wrapEl = document.getElementById('stage-wrap');
+  if (ZOOM !== 1) { wrapEl.style.setProperty('--z', ZOOM); wrapEl.classList.add('zoomed'); }
+  else { wrapEl.style.removeProperty('--z'); wrapEl.classList.remove('zoomed'); }
+  var availW = vw / ZOOM - 24;
+  var availH = vh / ZOOM - 24;
   var newW = Math.max(260, Math.min(400, Math.round(availW)));
   var newH = Math.max(340, Math.min(620, Math.round(availH))); // lowered ceiling from 760: a tall canvas in a shorter preview pane was very likely the cause of "the floor seems to be way down / off-screen"
   var prevGroundY = groundY, prevPlatformCX = platformCX;
@@ -1594,17 +1609,19 @@ function positionRotateButtons(){
   }
   var par = rotBtnL.offsetParent || document.body;
   var cr = canvas.getBoundingClientRect(), pr = par.getBoundingClientRect();
-  var sc = cr.width / W, left0 = cr.left - pr.left - par.clientLeft, top0 = cr.top - pr.top - par.clientTop;
+  // rects are on screen (scaled by ZOOM); the buttons are placed inside the stage, so work in unscaled px
+  var crW = cr.width / ZOOM, crH = cr.height / ZOOM;
+  var sc = crW / W, left0 = (cr.left - pr.left) / ZOOM - par.clientLeft, top0 = (cr.top - pr.top) / ZOOM - par.clientTop;
   var bw = rotBtnL.offsetWidth, bh = rotBtnL.offsetHeight;
   var reach = glyphRadius(currentPiece.ch) * currentPiece.r + 14;         // canvas px from the piece centre to the button's inner edge
   var cx = currentPiece.x, cy = currentPiece.y;
   var lx = left0 + (cx - reach) * sc - bw, rx = left0 + (cx + reach) * sc;
-  var minX = left0 + 2, maxX = left0 + cr.width - bw - 2;
+  var minX = left0 + 2, maxX = left0 + crW - bw - 2;
   var y = top0 + cy * sc - bh / 2, ly = y, ry = y;
   var above = top0 + (cy - reach * 0.75) * sc - bh;
   if (lx < minX) { lx = minX; ly = above; }
   if (rx > maxX) { rx = maxX; ry = above; }
-  var yMin = top0 + 2, yMax = top0 + cr.height - bh - 2;
+  var yMin = top0 + 2, yMax = top0 + crH - bh - 2;
   ly = Math.max(yMin, Math.min(yMax, ly)); ry = Math.max(yMin, Math.min(yMax, ry));
   var st = Math.round(lx) + ',' + Math.round(ly) + ',' + Math.round(rx) + ',' + Math.round(ry);
   if (st !== rotBtnState) {
