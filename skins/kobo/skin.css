@@ -1,0 +1,70 @@
+/* あそびトーク（ゲーム工房）版の見た目。絵は Canva で作ったもの（このページの中で見せるだけ。保存・ダウンロードの機能は付けない） */
+html.skin, html.skin body{ background:transparent; } /* まわりはゲームセンターの木の板を見せる */
+html.skin #gameCanvas, html.skin #hud, html.skin .panel-overlay{ -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; }
+
+/* 画面のわく：手書きの二重線をやめて、写真のような落ち着いたわくに */
+html.skin #gameCanvas{
+  border:0; border-radius:16px;
+  background:#f3eadb url(bg.webp) center bottom / cover no-repeat;
+  box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 10px 26px rgba(70,48,24,.28);
+}
+html.skin #stage-wrap::after{ display:none; }
+
+/* タイトル：ゲーム工房のパッケージの絵 */
+html.skin #startOverlay{ background:#efe4d2 url(title.webp) center 30% / cover no-repeat; align-items:flex-end; padding-bottom:9%; }
+html.skin #startOverlay .panel{ background:none; border:0; box-shadow:none; transform:none; padding:0; min-width:0; }
+html.skin #startOverlay .panel::before, html.skin #startOverlay .panel::after{ display:none; }
+html.skin #startOverlay h1, html.skin #startOverlay .kicker, html.skin #startOverlay #tagline{ display:none; }
+html.skin #startOverlay .cta{ font-size:18px; padding:13px 44px; }
+
+/* ボタン：青えんぴつの色の、まるいボタン */
+html.skin button.cta{
+  border:0; border-radius:999px; background:linear-gradient(#5a86c2, #3f6cab);
+  box-shadow:0 3px 0 #2c4f80, 0 8px 16px rgba(40,60,100,.25); color:#fffdf7; letter-spacing:.04em;
+}
+html.skin button.cta:active{ transform:translateY(2px); box-shadow:0 1px 0 #2c4f80, 0 4px 8px rgba(40,60,100,.2); }
+
+/* カード：紙のカード（かたむいたテープはなし） */
+html.skin .panel{
+  background:#fbf6ec url(paper.webp) center / cover; border:0; border-radius:12px; transform:none;
+  box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 12px 28px rgba(60,40,20,.30);
+}
+html.skin .panel::before, html.skin .panel::after{ display:none; }
+html.skin .panel-overlay:not(#startOverlay){ background:rgba(58,44,30,.42); }
+
+/* ゲームオーバー：絵つきのカード */
+html.skin #overOverlay .panel{ padding:0 0 22px; overflow:hidden; width:min(84%, 290px); min-width:0; }
+html.skin #overOverlay .panel::before{
+  display:block; content:""; position:static; transform:none; clip-path:none; box-shadow:none;
+  width:100%; height:auto; aspect-ratio:3 / 2; background:#e8dcc6 url(over.webp) center / cover no-repeat; margin:0 0 14px;
+}
+html.skin #overOverlay .panel > *:not(.cta){ padding:0 18px; }
+html.skin #overOverlay .big{ font-size:40px; }
+
+/* スコア・つぎ・せってい：木のコマ */
+html.skin #scoreLabel, html.skin #nextLabel{ color:#4a3a2a; opacity:.85; text-shadow:0 0 3px #fbf4e6, 0 0 6px #fbf4e6; }
+html.skin #scoreVal{
+  border:0; border-radius:50%; min-width:44px; height:44px; padding:0 8px;
+  background:url(disc.webp) center / 100% 100% no-repeat; color:#3a2a1c; font-size:21px;
+  filter:drop-shadow(0 3px 3px rgba(60,40,20,.28));
+}
+html.skin #nextGlyph{
+  border:0; width:44px; height:44px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #4b4540 0%, #2b2622 62%, #1f1b18 100%);
+  box-shadow:0 0 0 2px #cbb391, 0 3px 6px rgba(40,28,16,.35);
+}
+html.skin #settingsBtn{
+  border:0; width:44px; height:44px; border-radius:50%;
+  background:url(disc.webp) center / 100% 100% no-repeat; box-shadow:none;
+  filter:drop-shadow(0 3px 3px rgba(60,40,20,.28));
+}
+html.skin #settingsBtn:active{ transform:translateY(1px); }
+html.skin #settings-panel{
+  border:0; border-radius:12px; background:#fbf6ec url(paper.webp) center / cover;
+  box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 10px 24px rgba(60,40,20,.30);
+}
+html.skin #toggle-switch{ background:#cdbfa8; border:0; box-shadow:inset 0 1px 3px rgba(60,40,20,.35); }
+html.skin #toggle-switch .thumb{ border:0; top:3px; left:3px; width:18px; height:18px; background:#fffdf7; box-shadow:0 1px 3px rgba(60,40,20,.4); }
+html.skin #toggle-switch.is-on{ background:#86a77f; }
+html.skin #toggle-switch.is-on .thumb{ left:21px; }
+html.skin #creditsBtn, html.skin #langSelect{ border:1px solid #bba98c; border-radius:8px; background:#fffdf7; }

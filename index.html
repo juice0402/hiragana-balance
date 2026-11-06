@@ -33,7 +33,16 @@
     font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
   }
   #stage-wrap{ position:relative; }
-  #stage-wrap.zoomed{ transform:scale(var(--z)); } /* iOS アプリの広い画面（iPad）だけ、ゲームごと大きくする */
+  #stage-wrap.zoomed{ transform:scale(var(--z)); }
+  /* iOS アプリのスマホ（html.full）：画面のふちまでゲーム。上の切り欠き・下のバーはよける */
+  html.ios.skin{ background:#d9cdb8; }
+  html.ios.skin body{ background:radial-gradient(1200px 800px at 20% -10%, #efe3cf 0%, transparent 60%), radial-gradient(1200px 800px at 100% 110%, #e7d8bf 0%, transparent 55%), #d9cdb8; }
+  html.full #gameCanvas, html.full.skin #gameCanvas{ border:0; border-radius:0; box-shadow:none; }
+  html.full #stage-wrap::after{ display:none; }
+  html.full #hud{ padding-top:calc(14px + var(--sat, 0px)); }
+  html.full #settingsBtn, html.full.skin #settingsBtn{ bottom:calc(14px + var(--sab, 0px)); }
+  html.full #settings-panel, html.full.skin #settings-panel{ bottom:calc(60px + var(--sab, 0px)); }
+  html.full.skin #startOverlay{ padding-bottom:calc(9% + var(--sab, 0px)); } /* iOS アプリの広い画面（iPad）だけ、ゲームごと大きくする */
   #gameCanvas{
     display:block; border-radius:18px; border:3px solid var(--sumi);
     background: linear-gradient(180deg,#fffaf1 0%, #f6ead6 100%);
@@ -410,6 +419,25 @@ var BASE_DPR = Math.min(window.devicePixelRatio || 1, 2);
 var ZOOM = 1;            // > 1 only in the iOS app on a wide screen (iPad): the whole stage is scaled up with a CSS transform
 var DPR = BASE_DPR;      // canvas pixels per CSS px (times ZOOM so the enlarged canvas stays sharp)
 // iOS アプリで画面が広いとき（iPad）だけ、ゲームを画面いっぱいまで大きくする。ブラウザ・iPhone は 1
+var FULL = false, SAFE_TOP = 0, SAFE_BOTTOM = 0;
+if (window.APP_PLATFORM === 'ios') {
+  document.documentElement.classList.add('ios');
+  // let the page reach under the notch and the home bar, then keep the HUD and the desk out of them
+  var vpMeta = document.querySelector('meta[name="viewport"]');
+  if (vpMeta && vpMeta.content.indexOf('viewport-fit') < 0) vpMeta.content += ', viewport-fit=cover';
+}
+function readSafeArea(){
+  var probe = document.getElementById('safeProbe');
+  if (!probe) {
+    probe = document.createElement('div'); probe.id = 'safeProbe';
+    probe.style.cssText = 'position:fixed;left:0;top:0;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)';
+    document.body.appendChild(probe);
+  }
+  var cs = getComputedStyle(probe);
+  SAFE_TOP = parseFloat(cs.paddingTop) || 0; SAFE_BOTTOM = parseFloat(cs.paddingBottom) || 0;
+  document.documentElement.style.setProperty('--sat', SAFE_TOP + 'px');
+  document.documentElement.style.setProperty('--sab', SAFE_BOTTOM + 'px');
+}
 function appZoom(vw, vh){
   if (window.APP_PLATFORM !== 'ios') return 1;
   var z = Math.min(vw / 424, vh / 644);
@@ -420,13 +448,17 @@ function appZoom(vw, vh){
 // Pictures live next to the game file (skins/<name>/); without a skin everything is drawn in code ----
 var SKIN_ART = {};
 (function loadSkin(){
-  var m = /[?&]skin=([a-z0-9-]{1,24})(?:&|$)/.exec(location.search || '');
-  if (!m || !window.fetch) return;
+  // the iOS app passes the skin in window.APP_SKIN = { name, cfg } (its pages are files, where fetch does not work)
+  var appSkin = window.APP_SKIN && /^[a-z0-9-]{1,24}$/.test(window.APP_SKIN.name || '') ? window.APP_SKIN : null;
+  var m = appSkin ? [0, appSkin.name] : /[?&]skin=([a-z0-9-]{1,24})(?:&|$)/.exec(location.search || '');
+  if (!m || (!appSkin && !window.fetch)) return;
   var base = 'skins/' + m[1] + '/', root = document.documentElement;
   root.classList.add('skin-pending');
   var done = function(){ root.classList.remove('skin-pending'); };
   setTimeout(done, 2500);
-  fetch(base + 'skin.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(cfg){
+  var getCfg = appSkin && appSkin.cfg ? Promise.resolve(appSkin.cfg)
+    : fetch(base + 'skin.json').then(function(r){ return r.ok ? r.json() : null; });
+  getCfg.then(function(cfg){
     if (!cfg) { done(); return; }
     root.classList.add('skin', 'skin-' + m[1]);
     document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
@@ -454,13 +486,17 @@ function layout(){
   var vw = vv ? vv.width : window.innerWidth, vh = vv ? vv.height : window.innerHeight;
   ZOOM = appZoom(vw, vh);
   DPR = BASE_DPR * ZOOM;
+  FULL = window.APP_PLATFORM === 'ios' && ZOOM === 1;   // the iOS app on a phone: the game fills the screen
+  var rootEl = document.documentElement;
+  rootEl.classList.toggle('full', FULL);
+  if (FULL) readSafeArea();
   var wrapEl = document.getElementById('stage-wrap');
   if (ZOOM !== 1) { wrapEl.style.setProperty('--z', ZOOM); wrapEl.classList.add('zoomed'); }
   else { wrapEl.style.removeProperty('--z'); wrapEl.classList.remove('zoomed'); }
   var availW = vw / ZOOM - 24;
   var availH = vh / ZOOM - 24;
-  var newW = Math.max(260, Math.min(400, Math.round(availW)));
-  var newH = Math.max(340, Math.min(620, Math.round(availH))); // lowered ceiling from 760: a tall canvas in a shorter preview pane was very likely the cause of "the floor seems to be way down / off-screen"
+  var newW = FULL ? Math.round(vw) : Math.max(260, Math.min(400, Math.round(availW)));
+  var newH = FULL ? Math.max(340, Math.round(vh)) : Math.max(340, Math.min(620, Math.round(availH))); // lowered ceiling from 760: a tall canvas in a shorter preview pane was very likely the cause of "the floor seems to be way down / off-screen"
   var prevGroundY = groundY, prevPlatformCX = platformCX;
 
   W = newW; H = newH;
@@ -470,7 +506,7 @@ function layout(){
   canvas.height = Math.round(H * DPR);
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 
-  groundY = H - 46;
+  groundY = H - 46 - (FULL ? SAFE_BOTTOM : 0);
   platformW = 128;
   platformCX = W / 2;
   platformLeft = platformCX - platformW / 2;

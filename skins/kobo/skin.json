@@ -1,0 +1,5 @@
+{
+  "css": "skin.css",
+  "desk": { "src": "desk.webp", "x0": 4.34, "x1": 287.68, "top": 15.5 },
+  "ruler": { "src": "ruler.webp", "h": 15, "alpha": 0.78 }
+}
