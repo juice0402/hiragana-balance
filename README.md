@@ -37,6 +37,6 @@
 | Klee One（画面の文字） | Fontworks Inc. | SIL Open Font License 1.1（Google Fonts から読み込み） |
 | Matter.js 0.20.0（物理エンジン） | Liam Brummitt and contributors | MIT License |
 | poly-decomp.js（多角形の分割） | Stefan Hedman | MIT License |
-| BGM | フリー素材（クレジット表記不要のもの） | 配布元の規約に従う |
+| BGM | このゲームのオリジナル（ゲームの中で Web Audio で作曲・合成） | — |
 
 ゲーム内の「クレジット」画面にも同じ内容を載せています。

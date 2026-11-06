@@ -3,7 +3,7 @@
 このリポジトリを編集するときの前提と、これまでに決まったことのまとめ。
 
 ## 基本
-- ゲームは `index.html` 1 枚で完結（Matter.js・文字データ・BGM をすべて埋め込み）。外部読み込みは Google Fonts の Klee One だけ。
+- ゲームは `index.html` 1 枚で完結（Matter.js・文字データを埋め込み。BGM はコードで作る）。外部読み込みは Google Fonts の Klee One だけ。
 - `index.html` はリリース版（デバッグ用フック・計測コードは削除済み）。変更はこのファイルに直接入れる。
 - 個人情報（本名・住所・電話番号・生年月日・メールアドレスなど）はリポジトリに絶対に入れない。
 - `main` の `index.html` が更新されると、GitHub Actions（`.github/workflows/itch-deploy.yml`）が itch.io に自動でアップロードする（Secrets の `BUTLER_API_KEY` が必要）。つまり **main に push = 世界に公開**。作業は別ブランチで進め、プレビューでユーザーの OK をもらってから main に入れる。
@@ -13,7 +13,7 @@
 ## ファイル内の構成（index.html）
 - `<script>` 1 つ目: Matter.js 0.20.0（minified）。2 つ目: poly-decomp。
 - `var CHAR_DATA = [...]`: 文字ごとのアウトライン（描画用 path）と当たり判定用ポリゴン（数値の平坦配列、実行時にデコード）。
-- 末尾の `<script>`: BGM の data URI（`BGM_DATA_URI`）。ゲーム本体より後に読み込まれる。
+- BGM はゲームの中で作る（`bgmCompose` が楽譜・`bgmRender` が OfflineAudioContext で1回だけ合成してループ）。音のファイルは持たない（前の曲は出どころが分からず 11/6 に差しかえ）。ニ長調・62 BPM・24 小節
 
 ## 物理まわりで決まっていること（安易に変えない）
 - 接触ソルバーは Box2D（Erin Catto）流の Gauss-Seidel に差し替え済み: 摩擦を先に解く → 法線。クーロン上限は静止/動摩擦とも `mu * 法線インパルス`。
