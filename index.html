@@ -233,6 +233,14 @@
     70%{ transform:scale(var(--z,1)) translate(2px,1px); } 85%{ transform:scale(var(--z,1)) translate(-1px,0); }
   }
   html.skin-pending #startOverlay .panel{ visibility:hidden; }
+  /* iOS アプリだけ：ゲームオーバーのカードの「ランキング」「シェア」（アプリの APP_* がないときは出さず、場所もとらない） */
+  #overExtra{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px 10px; margin-top:14px; }
+  #overExtra[hidden], #overExtra [hidden]{ display:none; }
+  #overExtra button.cta{ position:relative; font-size:13px; padding:8px 16px; border-width:2px; box-shadow:1.5px 2px 0 var(--sumi); white-space:nowrap; }
+  #overExtra button.cta:active{ box-shadow:.5px 1px 0 var(--sumi); }
+  #overExtra button.cta::after{ content:""; position:absolute; inset:-5px -4px; } /* 指で押しやすいように、見た目より少し広く */
+  html.skin #overExtra button.cta{ box-shadow:0 2px 0 #2c4f80, 0 5px 10px rgba(40,60,100,.22); }
+  html.skin #overExtra button.cta:active{ box-shadow:0 1px 0 #2c4f80, 0 3px 6px rgba(40,60,100,.2); }
 </style>
 </head>
 <body>
@@ -393,6 +401,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
       <div class="big" id="finalScore">0</div>
       <div class="sub" id="highScoreLine">Best: 0</div>
       <button class="cta" id="retryBtn">Play again</button>
+      <div id="overExtra" hidden><button class="cta" id="rankBtn" type="button" hidden>Ranking</button><button class="cta" id="shareBtn" type="button" hidden>Share</button></div>
     </div>
   </div>
 </div>
@@ -541,64 +550,79 @@ var I18N = {
         score:'SCORE', next:'NEXT', settings:'Settings', best:'Best', sound:'Sound', soundToggle:'Sound on/off', credits:'Credits', view:'View', language:'Language',
         rotCW:'Rotate clockwise', rotCCW:'Rotate counterclockwise',
         crTitle:'Credits', crLetters:'Letter shapes', crUi:'Interface font', crPhysics:'Physics engine', oflNote:' (full text below)', close:'Close',
-        overTitle:'Oops, it toppled!', overSub:'Letters stacked', bestLine:'Best: {n}', again:'Play again' },
+        overTitle:'Oops, it toppled!', overSub:'Letters stacked', bestLine:'Best: {n}', again:'Play again',
+        ranking:'Ranking', share:'Share', shareText:'I stacked {n} letters in Hiragana Balance!' },
   ja: { doc:'ひらがなバランス', title:'ひらがなバランス', kicker:'', tagline:'もじを おとして たかく つみあげよう！', start:'はじめる',
         score:'スコア', next:'つぎ', settings:'せってい', best:'さいこうきろく', sound:'おと', soundToggle:'おとのオンオフ', credits:'クレジット', view:'みる', language:'ことば',
         rotCW:'とけいまわりにまわす', rotCCW:'はんとけいまわりにまわす',
         crTitle:'クレジット', crLetters:'もじの かたち', crUi:'がめんの もじ', crPhysics:'ぶつり エンジン', oflNote:'(ぜんぶん は した)', close:'とじる',
-        overTitle:'くずれちゃった！', overSub:'つみあげた もじ', bestLine:'さいこうきろく {n}', again:'もういちど あそぶ' },
+        overTitle:'くずれちゃった！', overSub:'つみあげた もじ', bestLine:'さいこうきろく {n}', again:'もういちど あそぶ',
+        ranking:'ランキング', share:'シェア', shareText:'ひらがなバランスで {n}もじ つんだよ！' },
   'zh-CN': { tagline:'让文字落下，堆得高高的！', start:'开始', score:'得分', next:'下一个', settings:'设置', best:'最高纪录', sound:'声音', soundToggle:'声音开关',
         credits:'制作信息', view:'查看', language:'语言', rotCW:'顺时针旋转', rotCCW:'逆时针旋转',
         crTitle:'制作信息', crLetters:'文字字形', crUi:'界面字体', crPhysics:'物理引擎', oflNote:'（全文见下方）', close:'关闭',
-        overTitle:'哎呀，倒了！', overSub:'堆起的文字', bestLine:'最高纪录：{n}', again:'再玩一次' },
+        overTitle:'哎呀，倒了！', overSub:'堆起的文字', bestLine:'最高纪录：{n}', again:'再玩一次',
+        ranking:'排行榜', share:'分享', shareText:'我在 Hiragana Balance 里堆了 {n} 个字！' },
   'zh-TW': { tagline:'讓文字落下，堆得高高的！', start:'開始', score:'分數', next:'下一個', settings:'設定', best:'最高紀錄', sound:'聲音', soundToggle:'聲音開關',
         credits:'製作資訊', view:'查看', language:'語言', rotCW:'順時針旋轉', rotCCW:'逆時針旋轉',
         crTitle:'製作資訊', crLetters:'文字字形', crUi:'介面字體', crPhysics:'物理引擎', oflNote:'（全文見下方）', close:'關閉',
-        overTitle:'哎呀，倒了！', overSub:'堆起的文字', bestLine:'最高紀錄：{n}', again:'再玩一次' },
+        overTitle:'哎呀，倒了！', overSub:'堆起的文字', bestLine:'最高紀錄：{n}', again:'再玩一次',
+        ranking:'排行榜', share:'分享', shareText:'我在 Hiragana Balance 裡疊了 {n} 個字！' },
   ko: { tagline:'글자를 떨어뜨려 높이 쌓아 보세요!', start:'시작', score:'점수', next:'다음', settings:'설정', best:'최고 기록', sound:'소리', soundToggle:'소리 켜기/끄기',
         credits:'크레딧', view:'보기', language:'언어', rotCW:'시계 방향으로 회전', rotCCW:'시계 반대 방향으로 회전',
         crTitle:'크레딧', crLetters:'글자 모양', crUi:'화면 글꼴', crPhysics:'물리 엔진', oflNote:' (전문은 아래에)', close:'닫기',
-        overTitle:'앗, 무너졌어요!', overSub:'쌓은 글자', bestLine:'최고 기록: {n}', again:'다시 하기' },
+        overTitle:'앗, 무너졌어요!', overSub:'쌓은 글자', bestLine:'최고 기록: {n}', again:'다시 하기',
+        ranking:'랭킹', share:'공유', shareText:'Hiragana Balance에서 글자를 {n}개 쌓았어요!' },
   es: { tagline:'¡Suelta las letras y apílalas bien alto!', start:'Empezar', score:'PUNTOS', next:'SIGUIENTE', settings:'Ajustes', best:'Récord', sound:'Sonido', soundToggle:'Activar/desactivar sonido',
         credits:'Créditos', view:'Ver', language:'Idioma', rotCW:'Girar en sentido horario', rotCCW:'Girar en sentido antihorario',
         crTitle:'Créditos', crLetters:'Forma de las letras', crUi:'Fuente de la interfaz', crPhysics:'Motor de física', oflNote:' (texto completo abajo)', close:'Cerrar',
-        overTitle:'¡Uy, se derrumbó!', overSub:'Letras apiladas', bestLine:'Récord: {n}', again:'Jugar otra vez' },
+        overTitle:'¡Uy, se derrumbó!', overSub:'Letras apiladas', bestLine:'Récord: {n}', again:'Jugar otra vez',
+        ranking:'Ranking', share:'Compartir', shareText:'¡Apilé {n} letras en Hiragana Balance!' },
   pt: { tagline:'Solte as letras e empilhe bem alto!', start:'Começar', score:'PONTOS', next:'PRÓXIMA', settings:'Configurações', best:'Recorde', sound:'Som', soundToggle:'Ligar/desligar som',
         credits:'Créditos', view:'Ver', language:'Idioma', rotCW:'Girar no sentido horário', rotCCW:'Girar no sentido anti-horário',
         crTitle:'Créditos', crLetters:'Formato das letras', crUi:'Fonte da interface', crPhysics:'Motor de física', oflNote:' (texto completo abaixo)', close:'Fechar',
-        overTitle:'Ops, desabou!', overSub:'Letras empilhadas', bestLine:'Recorde: {n}', again:'Jogar de novo' },
+        overTitle:'Ops, desabou!', overSub:'Letras empilhadas', bestLine:'Recorde: {n}', again:'Jogar de novo',
+        ranking:'Ranking', share:'Compartilhar', shareText:'Empilhei {n} letras no Hiragana Balance!' },
   fr: { tagline:'Lâchez les lettres et empilez-les le plus haut possible !', start:'Jouer', score:'SCORE', next:'SUIVANTE', settings:'Paramètres', best:'Record', sound:'Son', soundToggle:'Activer/désactiver le son',
         credits:'Crédits', view:'Voir', language:'Langue', rotCW:'Tourner dans le sens horaire', rotCCW:'Tourner dans le sens antihoraire',
         crTitle:'Crédits', crLetters:'Forme des lettres', crUi:'Police de l’interface', crPhysics:'Moteur physique', oflNote:' (texte intégral ci-dessous)', close:'Fermer',
-        overTitle:'Oups, tout s’est effondré !', overSub:'Lettres empilées', bestLine:'Record : {n}', again:'Rejouer' },
+        overTitle:'Oups, tout s’est effondré !', overSub:'Lettres empilées', bestLine:'Record : {n}', again:'Rejouer',
+        ranking:'Classement', share:'Partager', shareText:'J’ai empilé {n} lettres dans Hiragana Balance !' },
   de: { tagline:'Lass die Buchstaben fallen und staple sie ganz hoch!', start:'Spielen', score:'PUNKTE', next:'NÄCHSTER', settings:'Einstellungen', best:'Rekord', sound:'Ton', soundToggle:'Ton an/aus',
         credits:'Credits', view:'Ansehen', language:'Sprache', rotCW:'Im Uhrzeigersinn drehen', rotCCW:'Gegen den Uhrzeigersinn drehen',
         crTitle:'Credits', crLetters:'Buchstabenformen', crUi:'Schrift der Oberfläche', crPhysics:'Physik-Engine', oflNote:' (vollständiger Text unten)', close:'Schließen',
-        overTitle:'Hoppla, umgefallen!', overSub:'Gestapelte Buchstaben', bestLine:'Rekord: {n}', again:'Nochmal spielen' },
+        overTitle:'Hoppla, umgefallen!', overSub:'Gestapelte Buchstaben', bestLine:'Rekord: {n}', again:'Nochmal spielen',
+        ranking:'Rangliste', share:'Teilen', shareText:'Ich habe {n} Buchstaben in Hiragana Balance gestapelt!' },
   it: { tagline:'Lascia cadere le lettere e impilale più in alto che puoi!', start:'Inizia', score:'PUNTI', next:'PROSSIMA', settings:'Impostazioni', best:'Record', sound:'Suono', soundToggle:'Attiva/disattiva suono',
         credits:'Crediti', view:'Vedi', language:'Lingua', rotCW:'Ruota in senso orario', rotCCW:'Ruota in senso antiorario',
         crTitle:'Crediti', crLetters:'Forma delle lettere', crUi:'Font dell’interfaccia', crPhysics:'Motore fisico', oflNote:' (testo completo qui sotto)', close:'Chiudi',
-        overTitle:'Ops, è crollata!', overSub:'Lettere impilate', bestLine:'Record: {n}', again:'Gioca ancora' },
+        overTitle:'Ops, è crollata!', overSub:'Lettere impilate', bestLine:'Record: {n}', again:'Gioca ancora',
+        ranking:'Classifica', share:'Condividi', shareText:'Ho impilato {n} lettere in Hiragana Balance!' },
   ru: { tagline:'Роняй буквы и строй башню повыше!', start:'Играть', score:'ОЧКИ', next:'ДАЛЕЕ', settings:'Настройки', best:'Рекорд', sound:'Звук', soundToggle:'Включить/выключить звук',
         credits:'Авторы', view:'Открыть', language:'Язык', rotCW:'Повернуть по часовой стрелке', rotCCW:'Повернуть против часовой стрелки',
         crTitle:'Авторы', crLetters:'Форма букв', crUi:'Шрифт интерфейса', crPhysics:'Физический движок', oflNote:' (полный текст ниже)', close:'Закрыть',
-        overTitle:'Ой, всё рухнуло!', overSub:'Букв в башне', bestLine:'Рекорд: {n}', again:'Ещё раз' },
+        overTitle:'Ой, всё рухнуло!', overSub:'Букв в башне', bestLine:'Рекорд: {n}', again:'Ещё раз',
+        ranking:'Рейтинг', share:'Поделиться', shareText:'Букв в моей башне в Hiragana Balance: {n}!' },
   id: { tagline:'Jatuhkan hurufnya dan tumpuk setinggi mungkin!', start:'Mulai', score:'SKOR', next:'BERIKUTNYA', settings:'Pengaturan', best:'Rekor', sound:'Suara', soundToggle:'Nyalakan/matikan suara',
         credits:'Kredit', view:'Lihat', language:'Bahasa', rotCW:'Putar searah jarum jam', rotCCW:'Putar berlawanan arah jarum jam',
         crTitle:'Kredit', crLetters:'Bentuk huruf', crUi:'Font antarmuka', crPhysics:'Mesin fisika', oflNote:' (teks lengkap di bawah)', close:'Tutup',
-        overTitle:'Yah, roboh!', overSub:'Huruf yang ditumpuk', bestLine:'Rekor: {n}', again:'Main lagi' },
+        overTitle:'Yah, roboh!', overSub:'Huruf yang ditumpuk', bestLine:'Rekor: {n}', again:'Main lagi',
+        ranking:'Peringkat', share:'Bagikan', shareText:'Aku menumpuk {n} huruf di Hiragana Balance!' },
   tr: { tagline:'Harfleri bırak, olabildiğince yükseğe yığ!', start:'Başla', score:'SKOR', next:'SIRADAKİ', settings:'Ayarlar', best:'Rekor', sound:'Ses', soundToggle:'Sesi aç/kapat',
         credits:'Emeği geçenler', view:'Gör', language:'Dil', rotCW:'Saat yönünde döndür', rotCCW:'Saat yönünün tersine döndür',
         crTitle:'Emeği geçenler', crLetters:'Harf şekilleri', crUi:'Arayüz yazı tipi', crPhysics:'Fizik motoru', oflNote:' (tam metin aşağıda)', close:'Kapat',
-        overTitle:'Eyvah, yıkıldı!', overSub:'Yığılan harf', bestLine:'Rekor: {n}', again:'Tekrar oyna' },
+        overTitle:'Eyvah, yıkıldı!', overSub:'Yığılan harf', bestLine:'Rekor: {n}', again:'Tekrar oyna',
+        ranking:'Sıralama', share:'Paylaş', shareText:'Hiragana Balance’ta {n} harf yığdım!' },
   vi: { tagline:'Thả chữ xuống và xếp thật cao nào!', start:'Bắt đầu', score:'ĐIỂM', next:'TIẾP THEO', settings:'Cài đặt', best:'Kỷ lục', sound:'Âm thanh', soundToggle:'Bật/tắt âm thanh',
         credits:'Ghi công', view:'Xem', language:'Ngôn ngữ', rotCW:'Xoay theo chiều kim đồng hồ', rotCCW:'Xoay ngược chiều kim đồng hồ',
         crTitle:'Ghi công', crLetters:'Hình dạng chữ', crUi:'Phông chữ giao diện', crPhysics:'Công cụ vật lý', oflNote:' (toàn văn bên dưới)', close:'Đóng',
-        overTitle:'Ối, đổ mất rồi!', overSub:'Số chữ đã xếp', bestLine:'Kỷ lục: {n}', again:'Chơi lại' },
+        overTitle:'Ối, đổ mất rồi!', overSub:'Số chữ đã xếp', bestLine:'Kỷ lục: {n}', again:'Chơi lại',
+        ranking:'Xếp hạng', share:'Chia sẻ', shareText:'Mình đã xếp được {n} chữ trong Hiragana Balance!' },
   th: { tagline:'ปล่อยตัวอักษรลงมา แล้วซ้อนให้สูงที่สุด!', start:'เริ่ม', score:'คะแนน', next:'ถัดไป', settings:'การตั้งค่า', best:'สถิติสูงสุด', sound:'เสียง', soundToggle:'เปิด/ปิดเสียง',
         credits:'เครดิต', view:'ดู', language:'ภาษา', rotCW:'หมุนตามเข็มนาฬิกา', rotCCW:'หมุนทวนเข็มนาฬิกา',
         crTitle:'เครดิต', crLetters:'รูปร่างตัวอักษร', crUi:'ฟอนต์หน้าจอ', crPhysics:'เอนจินฟิสิกส์', oflNote:' (ข้อความเต็มอยู่ด้านล่าง)', close:'ปิด',
-        overTitle:'อุ๊ย พังซะแล้ว!', overSub:'ตัวอักษรที่ซ้อนได้', bestLine:'สถิติสูงสุด: {n}', again:'เล่นอีกครั้ง' }
+        overTitle:'อุ๊ย พังซะแล้ว!', overSub:'ตัวอักษรที่ซ้อนได้', bestLine:'สถิติสูงสุด: {n}', again:'เล่นอีกครั้ง',
+        ranking:'อันดับ', share:'แชร์', shareText:'ฉันซ้อนตัวอักษรได้ {n} ตัวใน Hiragana Balance!' }
 };
 function langFromTag(tag){
   tag = String(tag || '').toLowerCase().replace(/_/g, '-');
@@ -627,7 +651,8 @@ function applyLang(code){
   document.title = t('doc');
   var txt = { scoreLabel:'score', nextLabel:'next', lblBest:'best', lblSound:'sound', lblCredits:'credits', creditsBtn:'view', lblLang:'language',
               titleText:'title', kickerText:'kicker', tagline:'tagline', startBtn:'start', creditsTitle:'crTitle', crLetters:'crLetters', crUi:'crUi',
-              crPhysics:'crPhysics', oflNote:'oflNote', creditsClose:'close', overTitle:'overTitle', overSub:'overSub', retryBtn:'again' };
+              crPhysics:'crPhysics', oflNote:'oflNote', creditsClose:'close', overTitle:'overTitle', overSub:'overSub', retryBtn:'again',
+              rankBtn:'ranking', shareBtn:'share' };
   Object.keys(txt).forEach(function(id){ var el = document.getElementById(id); if (el) el.textContent = t(txt[id]); });
   var kick = document.getElementById('kickerText'); if (kick) kick.style.display = t('kicker') ? '' : 'none';
   var aria = { settingsBtn:'settings', 'toggle-switch':'soundToggle', rotateLeftBtn:'rotCW', rotateRightBtn:'rotCCW', langSelect:'language' };
@@ -1059,6 +1084,7 @@ var sweepIndex = 0;
 var ANGULAR_DAMPING = 0.03;
 // little ink drops where a dropped letter first lands (looks only; does not touch the physics)
 var FX = { drops: [], puffs: [] };
+var lastLandHaptic = -1e9;
 Events.on(engine, 'collisionStart', function(ev){
   if (!activePieceObj || activePieceObj.__landed) return;
   var ap = activePieceObj.body;
@@ -1066,6 +1092,8 @@ Events.on(engine, 'collisionStart', function(ev){
     var p = ev.pairs[i];
     if (p.bodyA.parent !== ap && p.bodyB.parent !== ap) continue;
     activePieceObj.__landed = true;
+    var nowMs = performance.now();
+    if (nowMs - lastLandHaptic >= 150) { lastLandHaptic = nowMs; appHaptic('light'); }
     var speed = Math.hypot(ap.velocity.x, ap.velocity.y);
     if (speed < 0.6) return;
     var col = p.collision, x = ap.position.x, y = ap.bounds.max.y;
@@ -1134,6 +1162,7 @@ function celebrateScore(score){
     var h = document.getElementById('hanamaru');
     if (h) { h.classList.remove('show'); void h.getBoundingClientRect(); h.classList.add('show'); }
     sfxHanamaru();
+    appHaptic('success');
   }
 }
 
@@ -1484,16 +1513,35 @@ function checkGameOver(){
   return false;
 }
 
+// ---- iOS アプリの中だけ：アプリが入れる window.APP_* があるときだけ使う（ブラウザ・itch.io・あそびトークでは何もしない） ----
+function appHaptic(kind){ try { if (typeof window.APP_HAPTIC === 'function') window.APP_HAPTIC(kind); } catch (e) { /* ignore */ } }
+function updateOverExtra(){
+  var row = document.getElementById('overExtra'), rk = document.getElementById('rankBtn'), sh = document.getElementById('shareBtn');
+  if (!row || !rk || !sh) return;
+  var showRank = typeof window.APP_RANKING === 'function' && window.APP_GAMECENTER === true;
+  var showShare = typeof window.APP_SHARE === 'function';
+  rk.hidden = !showRank; sh.hidden = !showShare; row.hidden = !(showRank || showShare);
+}
+updateOverExtra();
+window.addEventListener('app-gamecenter', updateOverExtra);
+
 function showGameOver(){
   GAME.gameOver = true;
-  if (GAME.score > GAME.highScore) { GAME.highScore = GAME.score; saveHighScore(GAME.highScore); }
+  var newBest = GAME.score > GAME.highScore;
+  if (newBest) { GAME.highScore = GAME.score; saveHighScore(GAME.highScore); }
   document.getElementById('finalScore').textContent = GAME.score;
   document.getElementById('highScoreLine').textContent = bestLineText(GAME.highScore);
   updatePanelBestScore();
+  updateOverExtra();
+  appHaptic('heavy');
+  try { if (typeof window.APP_SCORE === 'function') window.APP_SCORE(GAME.score | 0); } catch (e) { /* ignore */ }
   var wrap = document.getElementById('stage-wrap');
   wrap.classList.remove('shake'); void wrap.offsetWidth; wrap.classList.add('shake');
   clearTimeout(overTimer);
-  overTimer = setTimeout(function(){ document.getElementById('overOverlay').classList.remove('hidden'); }, 650);
+  overTimer = setTimeout(function(){
+    document.getElementById('overOverlay').classList.remove('hidden');
+    if (newBest) appHaptic('success');
+  }, 650);
   // 別のページの中（あそびトークのゲームセンターなど）で遊んでいるときは、外のページにスコアを知らせる
   try {
     if (window.parent && window.parent !== window) {
@@ -1615,7 +1663,7 @@ window.addEventListener('mouseup', handleDragEnd);
 
 var rotateDirection = 0; // -1 CCW, +1 CW, 0 idle
 function bindRotateButton(el, dir){
-  var start = function(ev){ ev.preventDefault(); ev.stopPropagation(); if (ev.pointerId !== undefined && el.setPointerCapture) { try { el.setPointerCapture(ev.pointerId); } catch (e) {} } sfxRotate(); rotateDirection = dir; };
+  var start = function(ev){ ev.preventDefault(); ev.stopPropagation(); if (ev.pointerId !== undefined && el.setPointerCapture) { try { el.setPointerCapture(ev.pointerId); } catch (e) {} } sfxRotate(); if (rotateDirection !== dir) appHaptic('select'); rotateDirection = dir; };
   var stop = function(ev){ if (ev) ev.stopPropagation(); rotateDirection = 0; };
   el.addEventListener('pointerdown', start);
   el.addEventListener('pointerup', stop);
@@ -1678,6 +1726,14 @@ document.getElementById('startBtn').addEventListener('click', function(){
 document.getElementById('retryBtn').addEventListener('click', function(){
   sfxButton();
   resetGame();
+});
+document.getElementById('rankBtn').addEventListener('click', function(){
+  sfxButton();
+  try { if (typeof window.APP_RANKING === 'function') window.APP_RANKING(); } catch (e) { /* ignore */ }
+});
+document.getElementById('shareBtn').addEventListener('click', function(){
+  sfxButton();
+  try { if (typeof window.APP_SHARE === 'function') window.APP_SHARE(t('shareText').replace('{n}', GAME.score)); } catch (e) { /* ignore */ }
 });
 
 // ---------- audio: short SFX tones + embedded background music ----------
