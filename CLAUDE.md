@@ -9,6 +9,7 @@
 - `main` の `index.html` が更新されると、GitHub Actions（`.github/workflows/itch-deploy.yml`）が itch.io に自動でアップロードする（Secrets の `BUTLER_API_KEY` が必要）。つまり **main に push = 世界に公開**。作業は別ブランチで進め、プレビューでユーザーの OK をもらってから main に入れる。
 - iOS 版は juice0402/ios-kobo で組み立てる（`apps/hiragana-balance/app.json` の `game.ref` にこのリポジトリのコミットを書いて Actions を動かす）。自動では更新されないので、変更したらユーザーに伝える。`ios/ContentView.swift` は旧版（Swift Playground）。
 - iOS アプリ（`APP_PLATFORM='ios'`）では、ゲームが自分で大きさを合わせる（iPad は `ZOOM` で拡大・スマホは全画面。下の「スキン」）。
+- iOS アプリが入れる `window.APP_HAPTIC`（ふるえ）・`APP_SCORE`（Game Center にスコア）・`APP_RANKING`（ランキングを開く）・`APP_GAMECENTER`（ログインできたら true。そのあと window に `app-gamecenter` イベント）・`APP_SHARE`（シェア）は、あるときだけ使う（ブラウザ・itch.io・あそびトークでは何もしない）。ふるえは文字が最初にふれたとき light（`collisionStart`）・回転ボタン select・花丸 success・ゲームオーバー heavy（新記録ならカードが出るとき success）。ゲームオーバーで `APP_SCORE(score)`。カードの「もういちど」の下に小さい「ランキング」「シェア」（`#overExtra`。どちらも出ないときは場所をとらない）。
 
 ## ファイル内の構成（index.html）
 - `<script>` 1 つ目: Matter.js 0.20.0（minified）。2 つ目: poly-decomp。
