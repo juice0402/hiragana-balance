@@ -1631,7 +1631,17 @@ function pointerXYFromEvent(e){
   var clientY = (e.touches && e.touches[0]) ? e.touches[0].clientY : e.clientY;
   return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
 }
+// 設定を開いているときに机をタップしたら、設定を閉じるだけにする（文字は動かさない・落とさない）。
+// 1回のタップで pointerdown・touchstart・mousedown が続けて来るので、指をはなすまで全部むしする
+var swallowTap = false;
 function handleDragStart(e){
+  if (swallowTap) return;
+  var sp = document.getElementById('settings-panel');
+  if (sp && sp.classList.contains('show')) {
+    sp.classList.remove('show');
+    swallowTap = true;
+    return;
+  }
   if (GAME.gameOver || !currentPiece) return;
   pointerDown = true;
   var p = pointerXYFromEvent(e);
@@ -1654,6 +1664,9 @@ function handleDragEnd(){
 canvas.addEventListener('pointerdown', handleDragStart);
 canvas.addEventListener('pointermove', handleDragMove);
 window.addEventListener('pointerup', handleDragEnd);
+['pointerup', 'pointercancel', 'touchend', 'touchcancel', 'mouseup'].forEach(function(t){
+  window.addEventListener(t, function(){ swallowTap = false; });
+});
 canvas.addEventListener('touchstart', function(e){ e.preventDefault(); handleDragStart(e); }, { passive: false });
 canvas.addEventListener('touchmove', function(e){ e.preventDefault(); handleDragMove(e); }, { passive: false });
 window.addEventListener('touchend', handleDragEnd);
