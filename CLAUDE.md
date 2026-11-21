@@ -48,7 +48,7 @@
 - iOS アプリのスマホ（`APP_PLATFORM='ios'` で拡大しないとき）は画面いっぱい（`html.full`）。上の切り欠き・下のバーは env(safe-area-inset-*) でよける（`viewport-fit=cover` はアプリのときだけ足す）。iPad は `#stage-wrap` を CSS の transform で拡大（`ZOOM`）。
 
 ## 保存データ
-- 最高記録の localStorage キーは `hiraganaTowerBattle.highScore`、ミュートは `hiraganaTowerBattle.muted`。遊んだ回数（ゲームオーバーの回数）は `hiraganaTowerBattle.playCount`。3回目から・新記録・5文字以上のとき、カードが出るときに `APP_REVIEW()`（待つのと同じ版で1回は ios-kobo の shell）。旧名のままだが、既存プレイヤーの記録が消えるので変更しないこと。
+- 最高記録の localStorage キーは `hiraganaTowerBattle.highScore`、ミュートは `hiraganaTowerBattle.muted`。旧名のままだが、既存プレイヤーの記録が消えるので変更しないこと。遊んだ回数（ゲームオーバーの回数）は `hiraganaTowerBattle.playCount`。3回目から・新記録・5文字以上のとき、カードが出るときに `APP_REVIEW()`（待つのと同じ版で1回は ios-kobo の shell）。
 
 ## UI のテーマ
 - 画面の文字は 15 言語（en, ja, zh-CN, zh-TW, ko, es, pt, fr, de, it, ru, id, tr, vi, th）。`I18N` の辞書にあり、足りないキーは英語。言語の決め方は「設定で選んだもの（`hiraganaTowerBattle.lang`）→ URL の `?lang=` → iOS アプリが入れる `window.HB_LANGS` → ブラウザの言語 → 英語」。
