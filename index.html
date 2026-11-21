@@ -1231,6 +1231,15 @@ function loadHighScore(){
 function saveHighScore(v){
   try { localStorage.setItem(HIGH_SCORE_KEY, String(v)); } catch (e) { /* ignore */ }
 }
+// 遊んだ回数（ゲームオーバーの回数）。iOS アプリのレビューのお願いを3回目から出すのに使う
+var PLAY_COUNT_KEY = 'hiraganaTowerBattle.playCount';
+function bumpPlayCount(){
+  var n = 0;
+  try { n = parseInt(localStorage.getItem(PLAY_COUNT_KEY), 10) || 0; } catch (e) { n = 0; }
+  n += 1;
+  try { localStorage.setItem(PLAY_COUNT_KEY, String(n)); } catch (e) { /* ignore */ }
+  return n;
+}
 var GAME = { score: 0, highScore: loadHighScore(), gameOver: false, currentChar: null, nextChar: null };
 var pointerDown = false;
 
@@ -1529,6 +1538,9 @@ function showGameOver(){
   GAME.gameOver = true;
   var newBest = GAME.score > GAME.highScore;
   if (newBest) { GAME.highScore = GAME.score; saveHighScore(GAME.highScore); }
+  var plays = bumpPlayCount();
+  // iOS アプリだけ：3回目から・新記録・5文字以上のとき、カードが出るときにレビューのお願い（待つのと回数の制限は shell）
+  var askReview = plays >= 3 && newBest && GAME.score >= 5;
   document.getElementById('finalScore').textContent = GAME.score;
   document.getElementById('highScoreLine').textContent = bestLineText(GAME.highScore);
   updatePanelBestScore();
@@ -1541,6 +1553,7 @@ function showGameOver(){
   overTimer = setTimeout(function(){
     document.getElementById('overOverlay').classList.remove('hidden');
     if (newBest) appHaptic('success');
+    if (askReview) { try { if (typeof window.APP_REVIEW === 'function') window.APP_REVIEW(); } catch (e) { /* ignore */ } }
   }, 650);
   // 別のページの中（あそびトークのゲームセンターなど）で遊んでいるときは、外のページにスコアを知らせる
   try {
