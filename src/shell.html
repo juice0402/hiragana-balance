@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Hiragana Balance</title>
+<script>
+@@include vendor/matter.min.js@@
+</script>
+<script>
+@@include vendor/poly-decomp.min.js@@
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
+<style>
+@@include style.css@@
+</style>
+</head>
+<body>
+<div id="stage-wrap">
+  <canvas id="gameCanvas"></canvas>
+  <div id="hud">
+    <div id="scoreWrap"><span id="scoreLabel">SCORE</span><div id="scoreVal">0</div><svg id="hanamaru" viewBox="0 0 100 100" aria-hidden="true"><path d=""/></svg></div>
+    <div id="nextWrap"><span id="nextLabel">NEXT</span><div id="nextGlyph"></div></div>
+  </div>
+  <div id="settingsBtn" aria-label="Settings"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><g fill="#3a332c"><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(0 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(45 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(90 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(135 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(180 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(225 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(270 12 12)"/><rect x="10.3" y="1.6" width="3.4" height="5.2" rx="0.9" transform="rotate(315 12 12)"/><circle cx="12" cy="12" r="7.2"/></g><circle cx="12" cy="12" r="2.9" fill="#fffaf1"/></svg></div>
+  <div id="settings-panel">
+    <div class="row">
+      <span class="row-label" id="lblBest">Best</span>
+      <span class="row-value" id="panel-best-score">0</span>
+    </div>
+    <div class="row">
+      <span class="row-label" id="lblSound">Sound</span>
+      <div id="toggle-switch" aria-label="Sound on/off"><div class="thumb"></div></div>
+    </div>
+    <div class="row">
+      <span class="row-label" id="lblCredits">Credits</span>
+      <button id="creditsBtn" type="button">View</button>
+    </div>
+    <div class="row">
+      <span class="row-label" id="lblLang">Language</span>
+      <select id="langSelect" aria-label="Language"></select>
+    </div>
+  </div>
+  <div class="rotateBtn" id="rotateLeftBtn" aria-label="Rotate clockwise"><svg viewBox="12 -9 23 47" width="28" height="58" aria-hidden="true"><g transform="translate(47 0) scale(-1 1)"><g transform="rotate(-90 24 15)"><path d="M3 9 Q20 32 38 15.5 L38.8 9.8 Q20 21.2 3 9 Z" fill="#3a332c"/><path d="M46 5.4 L42.2 18.6 L32.8 8.2 Z" fill="#3a332c" stroke="#3a332c" stroke-width="1.8" stroke-linejoin="round"/></g></g></svg></div>
+  <div class="rotateBtn" id="rotateRightBtn" aria-label="Rotate counterclockwise"><svg viewBox="12 -9 23 47" width="28" height="58" aria-hidden="true"><g transform="rotate(-90 24 15)"><path d="M3 9 Q20 32 38 15.5 L38.8 9.8 Q20 21.2 3 9 Z" fill="#3a332c"/><path d="M46 5.4 L42.2 18.6 L32.8 8.2 Z" fill="#3a332c" stroke="#3a332c" stroke-width="1.8" stroke-linejoin="round"/></g></svg></div>
+  <div id="startOverlay" class="panel-overlay">
+    <div class="panel">
+      <h1 id="titleText">Hiragana Balance</h1>
+      <div class="kicker" id="kickerText" lang="ja">ひらがなバランス</div>
+      <p id="tagline">Drop the letters and stack them high!</p>
+      <button class="cta" id="startBtn">Start</button>
+    </div>
+  </div>
+  <div id="creditsOverlay" class="panel-overlay hidden">
+    <div class="panel credits">
+      <h1 id="creditsTitle">Credits</h1>
+      <div class="credits-body">
+        <h2 id="crLetters">Letter shapes</h2>
+        <p>Yuji Syuku<br>Copyright 2021 The Yuji Project Authors (https://github.com/Kinutafontfactory/Yuji)<br>SIL Open Font License, Version 1.1<span id="oflNote"> (full text below)</span></p>
+        <h2 id="crUi">Interface font</h2>
+        <p>Klee One (Google Fonts)<br>SIL Open Font License, Version 1.1</p>
+        <h2 id="crPhysics">Physics engine</h2>
+        <p>Matter.js 0.20.0<br>Copyright (c) Liam Brummitt and contributors<br>MIT License</p>
+        <p>poly-decomp.js<br>Copyright (c) 2013 Stefan Hedman<br>MIT License</p>
+        <h2>MIT License</h2>
+        <pre>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre>
+        <h2>SIL Open Font License 1.1</h2>
+        <pre>Copyright 2021 The Yuji Project Authors (https://github.com/Kinutafontfactory/Yuji)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+https://openfontlicense.org
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded, 
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+&quot;Font Software&quot; refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+&quot;Reserved Font Name&quot; refers to any names specified as such after the
+copyright statement(s).
+
+&quot;Original Version&quot; refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+&quot;Modified Version&quot; refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+&quot;Author&quot; refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION &amp; CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.</pre>
+      </div>
+      <button class="cta" id="creditsClose" type="button">Close</button>
+    </div>
+  </div>
+  <div id="overOverlay" class="panel-overlay hidden">
+    <div class="panel">
+      <div class="over-title" id="overTitle">Oops, it toppled!</div>
+      <div class="sub" id="overSub">Letters stacked</div>
+      <div class="big" id="finalScore">0</div>
+      <div class="sub" id="highScoreLine">Best: 0</div>
+      <button class="cta" id="retryBtn">Play again</button>
+      <div id="overExtra" hidden><button class="cta" id="rankBtn" type="button" hidden>Ranking</button><button class="cta" id="shareBtn" type="button" hidden>Share</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+@@include data/char-data.js@@
+</script>
+<script>
+@@include js/setup.js@@
+@@include js/glyph.js@@
+@@include js/physics.js@@
+@@include js/state.js@@
+@@include js/input.js@@
+@@include js/audio.js@@
+@@include js/loop.js@@
+</script>
+</body>
+</html>
