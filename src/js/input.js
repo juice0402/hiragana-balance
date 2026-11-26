@@ -170,9 +170,11 @@ document.getElementById('retryBtn').addEventListener('click', function(){
 document.getElementById('rankBtn').addEventListener('click', function(){
   sfxButton();
   try { if (typeof window.APP_RANKING === 'function') window.APP_RANKING(); } catch (e) { /* ignore */ }
+  unlockAchieve('hiragana_ranking');
 });
 document.getElementById('shareBtn').addEventListener('click', function(){
   sfxButton();
   try { if (typeof window.APP_SHARE === 'function') window.APP_SHARE(t('shareText').replace('{n}', GAME.score)); } catch (e) { /* ignore */ }
+  unlockAchieve('hiragana_share');
 });
 

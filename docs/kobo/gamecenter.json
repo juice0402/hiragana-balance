@@ -1,0 +1,239 @@
+{
+  "leaderboard": {
+    "id": "hiragana_balance_best",
+    "name": {
+      "ja": "さいこうきろく",
+      "en-US": "Best Score"
+    },
+    "suffix": {
+      "ja": "文字",
+      "en-US": " letters"
+    }
+  },
+  "achievements": [
+    {
+      "id": "hiragana_score_5",
+      "points": 10,
+      "hidden": false,
+      "image": "achievements/hiragana_score_5.png",
+      "ja": {
+        "name": "5もじ つめた",
+        "before": "1回で5文字つむ",
+        "after": "1回で5文字つんだ"
+      },
+      "en-US": {
+        "name": "Five Letters",
+        "before": "Stack 5 letters in one game",
+        "after": "Stacked 5 letters in one game"
+      }
+    },
+    {
+      "id": "hiragana_score_10",
+      "points": 10,
+      "hidden": false,
+      "image": "achievements/hiragana_score_10.png",
+      "ja": {
+        "name": "はなまる",
+        "before": "1回で10文字つむ",
+        "after": "1回で10文字つんだ"
+      },
+      "en-US": {
+        "name": "Gold Star",
+        "before": "Stack 10 letters in one game",
+        "after": "Stacked 10 letters in one game"
+      }
+    },
+    {
+      "id": "hiragana_score_20",
+      "points": 25,
+      "hidden": false,
+      "image": "achievements/hiragana_score_20.png",
+      "ja": {
+        "name": "20もじの とう",
+        "before": "1回で20文字つむ",
+        "after": "1回で20文字つんだ"
+      },
+      "en-US": {
+        "name": "Tower of 20",
+        "before": "Stack 20 letters in one game",
+        "after": "Stacked 20 letters in one game"
+      }
+    },
+    {
+      "id": "hiragana_score_30",
+      "points": 50,
+      "hidden": false,
+      "image": "achievements/hiragana_score_30.png",
+      "ja": {
+        "name": "30もじの とう",
+        "before": "1回で30文字つむ",
+        "after": "1回で30文字つんだ"
+      },
+      "en-US": {
+        "name": "Tower of 30",
+        "before": "Stack 30 letters in one game",
+        "after": "Stacked 30 letters in one game"
+      }
+    },
+    {
+      "id": "hiragana_score_50",
+      "points": 100,
+      "hidden": false,
+      "image": "achievements/hiragana_score_50.png",
+      "ja": {
+        "name": "50もじの とう",
+        "before": "1回で50文字つむ",
+        "after": "1回で50文字つんだ"
+      },
+      "en-US": {
+        "name": "Tower of 50",
+        "before": "Stack 50 letters in one game",
+        "after": "Stacked 50 letters in one game"
+      }
+    },
+    {
+      "id": "hiragana_total_100",
+      "points": 25,
+      "hidden": false,
+      "image": "achievements/hiragana_total_100.png",
+      "ja": {
+        "name": "ぜんぶで100もじ",
+        "before": "あわせて100文字つむ",
+        "after": "あわせて100文字つんだ"
+      },
+      "en-US": {
+        "name": "100 in Total",
+        "before": "Stack 100 letters in total",
+        "after": "Stacked 100 letters in total"
+      }
+    },
+    {
+      "id": "hiragana_total_500",
+      "points": 50,
+      "hidden": false,
+      "image": "achievements/hiragana_total_500.png",
+      "ja": {
+        "name": "ぜんぶで500もじ",
+        "before": "あわせて500文字つむ",
+        "after": "あわせて500文字つんだ"
+      },
+      "en-US": {
+        "name": "500 in Total",
+        "before": "Stack 500 letters in total",
+        "after": "Stacked 500 letters in total"
+      }
+    },
+    {
+      "id": "hiragana_total_1000",
+      "points": 100,
+      "hidden": false,
+      "image": "achievements/hiragana_total_1000.png",
+      "ja": {
+        "name": "ぜんぶで1000もじ",
+        "before": "あわせて1000文字つむ",
+        "after": "あわせて1000文字つんだ"
+      },
+      "en-US": {
+        "name": "1000 in Total",
+        "before": "Stack 1000 letters in total",
+        "after": "Stacked 1000 letters in total"
+      }
+    },
+    {
+      "id": "hiragana_all_kana",
+      "points": 100,
+      "hidden": false,
+      "image": "achievements/hiragana_all_kana.png",
+      "ja": {
+        "name": "あから んまで",
+        "before": "46文字をぜんぶ1回はつむ",
+        "after": "46文字をぜんぶつんだ"
+      },
+      "en-US": {
+        "name": "A to N",
+        "before": "Stack all 46 letters at least once",
+        "after": "Stacked all 46 letters"
+      }
+    },
+    {
+      "id": "hiragana_plays_10",
+      "points": 10,
+      "hidden": false,
+      "image": "achievements/hiragana_plays_10.png",
+      "ja": {
+        "name": "10かい あそんだ",
+        "before": "10回あそぶ",
+        "after": "10回あそんだ"
+      },
+      "en-US": {
+        "name": "10 Games",
+        "before": "Play 10 games",
+        "after": "Played 10 games"
+      }
+    },
+    {
+      "id": "hiragana_plays_50",
+      "points": 25,
+      "hidden": false,
+      "image": "achievements/hiragana_plays_50.png",
+      "ja": {
+        "name": "50かい あそんだ",
+        "before": "50回あそぶ",
+        "after": "50回あそんだ"
+      },
+      "en-US": {
+        "name": "50 Games",
+        "before": "Play 50 games",
+        "after": "Played 50 games"
+      }
+    },
+    {
+      "id": "hiragana_plays_100",
+      "points": 50,
+      "hidden": false,
+      "image": "achievements/hiragana_plays_100.png",
+      "ja": {
+        "name": "100かい あそんだ",
+        "before": "100回あそぶ",
+        "after": "100回あそんだ"
+      },
+      "en-US": {
+        "name": "100 Games",
+        "before": "Play 100 games",
+        "after": "Played 100 games"
+      }
+    },
+    {
+      "id": "hiragana_share",
+      "points": 10,
+      "hidden": false,
+      "image": "achievements/hiragana_share.png",
+      "ja": {
+        "name": "きろくを みせた",
+        "before": "きろくをシェアする",
+        "after": "きろくをシェアした"
+      },
+      "en-US": {
+        "name": "Show Off",
+        "before": "Share your score",
+        "after": "Shared your score"
+      }
+    },
+    {
+      "id": "hiragana_ranking",
+      "points": 10,
+      "hidden": false,
+      "image": "achievements/hiragana_ranking.png",
+      "ja": {
+        "name": "ランキングを みた",
+        "before": "ランキングをひらく",
+        "after": "ランキングをひらいた"
+      },
+      "en-US": {
+        "name": "Rankings",
+        "before": "Open the rankings",
+        "after": "Opened the rankings"
+      }
+    }
+  ]
+}

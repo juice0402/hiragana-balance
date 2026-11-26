@@ -74,8 +74,10 @@ function frame(ts){
         visuallySettled = xRange < 0.5 && yRange < 0.5 && angRange < 0.025;
       }
       if (apBody.isSleeping || (activeFrames > ACTIVE_TIMEOUT || visuallySettled)) {
+        var settledCh = activePieceObj.ch;
         activePieceObj = null;
         GAME.score++;
+        achieveOnSettle(settledCh);
         document.getElementById('scoreVal').textContent = GAME.score;
         celebrateScore(GAME.score);
         spawnCurrentPiece();

@@ -14,6 +14,7 @@
 - iOS 版は juice0402/ios-kobo で組み立てる（`apps/hiragana-balance/app.json` の `game.ref` にこのリポジトリのコミットを書いて Actions を動かす）。自動では更新されないので、変更したらユーザーに伝える。`ios/ContentView.swift` は旧版（Swift Playground）。
 - iOS アプリ（`APP_PLATFORM='ios'`）では、ゲームが自分で大きさを合わせる（iPad は `ZOOM` で拡大・スマホは全画面。下の「スキン」）。
 - iOS アプリが入れる `window.APP_HAPTIC`（ふるえ）・`APP_SCORE`（Game Center にスコア）・`APP_RANKING`（ランキングを開く）・`APP_GAMECENTER`（ログインできたら true。そのあと window に `app-gamecenter` イベント）・`APP_SHARE`（シェア）・`APP_REVIEW`（App Store のレビューのお願い）は、あるときだけ使う（ブラウザ・itch.io・あそびトークでは何もしない）。ふるえは文字が最初にふれたとき light（`collisionStart`）・回転ボタン select・花丸 success・ゲームオーバー heavy（新記録ならカードが出るとき success）。ゲームオーバーで `APP_SCORE(score)`。カードの「もういちど」の下に小さい「ランキング」「シェア」（`#overExtra`。どちらも出ないときは場所をとらない）。
+- 実績（Game Center）は `src/js/achieve.js` と `docs/kobo/gamecenter.json`（id は変えない）。取ったら `APP_ACHIEVE(id)`、開いたときと `app-gamecenter` で取ってある実績と最高記録を送りなおす。進み具合のセーブは `hiraganaTowerBattle.achieve`。バッジの絵は `python3 tools/badges.py`
 
 ## ファイルの構成（くわしくは docs/MAP.md）
 - `src/vendor/`: Matter.js 0.20.0・poly-decomp（minified）。
