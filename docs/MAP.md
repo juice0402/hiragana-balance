@@ -20,15 +20,19 @@
 | 6 | `src/js/setup.js` | Matter の別名・キャンバスの大きさ（`ZOOM`）・スキン（`?skin=`・`APP_SKIN`）・言語（`I18N`・`KANA`） | 263 |
 | 7 | `src/js/glyph.js` | 体の作りおき・墨の絵と影（`glyphSprites`）・アウトライン → 物理のパーツ | 216 |
 | 8 | `src/js/physics.js` | 物理エンジン（ソルバー・スリープ・`preSolvePosition` のラッパー）・花丸 | 333 |
-| 9 | `src/js/state.js` | ゲームの状態（`PHYS` の数字もここ）・接触と支えの判定・`markInternalEdges`・持っている文字・手番・iOS の `APP_*` | 361 |
+| 9 | `src/js/state.js` | ゲームの状態（`PHYS` の数字もここ）・接触と支えの判定・`markInternalEdges`・持っている文字・手番・iOS の `APP_*` | 362 |
+| 9b | `src/js/achieve.js` | 実績（Game Center）：`ACHIEVE_LIST`（id と条件。`docs/kobo/gamecenter.json` と同じ）・数えて覚える（`hiraganaTowerBattle.achieve`）・`APP_ACHIEVE` で送る・開いたときと `app-gamecenter` で送りなおす | 68 |
 | 10 | `src/js/input.js` | 入力（指で狙う・はなして落とす・`swallowTap`）・カメラ・回転ボタン | 178 |
 | 11 | `src/js/audio.js` | 効果音・BGM（`bgmCompose`・`bgmRender`） | 331 |
 | 12 | `src/js/loop.js` | 設定（最高記録・ミュート）・音のロック解除・メインループ `frame`・描画 `render`（机・定規） | 241 |
 
 - 6〜12 は1つの `<script>` の中の1つの関数（`(function(){ 'use strict'; … })()`）を、節の切れ目で切っただけ。ファイルをまたいで同じ変数を使う
-- セーブのキー（`hiraganaTowerBattle.*`）は `src/js/setup.js`・`state.js`・`audio.js` にある。変えない
+- セーブのキー（`hiraganaTowerBattle.*`）は `src/js/setup.js`・`state.js`・`achieve.js`・`audio.js` にある。変えない
 
 ## そのほか
+- `docs/kobo/gamecenter.json`：Game Center のランキングと実績（ios-kobo がビルドのときに読む。形はプロジェクトの claude/gamecenter-spec.md）。id は一度アプリに出したら変えない
+- `docs/kobo/achievements/<id>.png`：実績のバッジの絵（1024×1024・RGB）。`python3 tools/badges.py` で gamecenter.json から作る（コードの絵＝C。方眼紙・墨のひらがな・赤ペン）
+- `tools/achieve_check.py`：実績の確かめ（Playwright。にせの `APP_ACHIEVE` で、条件を満たすと呼ばれるか）
 - `skins/`：スキンの絵と `skin.json`（`?skin=<名前>`）
 - `assets/`：アイコン・itch.io の絵
 - `fonts/`：文字の形のもと（Yuji Syuku）

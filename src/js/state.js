@@ -322,6 +322,7 @@ function showGameOver(){
   updateOverExtra();
   appHaptic('heavy');
   try { if (typeof window.APP_SCORE === 'function') window.APP_SCORE(GAME.score | 0); } catch (e) { /* ignore */ }
+  achieveOnGameOver(plays);
   var wrap = document.getElementById('stage-wrap');
   wrap.classList.remove('shake'); void wrap.offsetWidth; wrap.classList.add('shake');
   clearTimeout(overTimer);
