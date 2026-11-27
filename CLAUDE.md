@@ -2,18 +2,22 @@
 
 このリポジトリを編集するときの前提と、これまでに決まったことのまとめ。
 
+- 直すのは `src/`。直したら `node tools/build.mjs`（`index.html` を作る）→ `npm test`（`--check`：index.html と src のずれを見る）
+- **`index.html` は自動で作るファイル。読まない・手で直さない**
+- 直す前に docs/MAP.md（どのファイルに何があるか）→ 検索 → その範囲だけ読む（プロジェクトの claude/code-rules.md）
+
 ## 基本
 - ゲームは `index.html` 1 枚で完結（Matter.js・文字データを埋め込み。BGM はコードで作る）。外部読み込みは Google Fonts の Klee One だけ。
-- `index.html` はリリース版（デバッグ用フック・計測コードは削除済み）。変更はこのファイルに直接入れる。
+- `index.html` はリリース版（デバッグ用フック・計測コードは削除済み）。`src/` からビルドで作る（遊ぶ人が開く出口。場所・名前・1ファイルで動くことは変えない）。
 - 個人情報（本名・住所・電話番号・生年月日・メールアドレスなど）はリポジトリに絶対に入れない。
 - `main` の `index.html` が更新されると、GitHub Actions（`.github/workflows/itch-deploy.yml`）が itch.io に自動でアップロードする（Secrets の `BUTLER_API_KEY` が必要）。つまり **main に push = 世界に公開**。作業は別ブランチで進め、プレビューでユーザーの OK をもらってから main に入れる。
 - iOS 版は juice0402/ios-kobo で組み立てる（`apps/hiragana-balance/app.json` の `game.ref` にこのリポジトリのコミットを書いて Actions を動かす）。自動では更新されないので、変更したらユーザーに伝える。`ios/ContentView.swift` は旧版（Swift Playground）。
 - iOS アプリ（`APP_PLATFORM='ios'`）では、ゲームが自分で大きさを合わせる（iPad は `ZOOM` で拡大・スマホは全画面。下の「スキン」）。
 - iOS アプリが入れる `window.APP_HAPTIC`（ふるえ）・`APP_SCORE`（Game Center にスコア）・`APP_RANKING`（ランキングを開く）・`APP_GAMECENTER`（ログインできたら true。そのあと window に `app-gamecenter` イベント）・`APP_SHARE`（シェア）・`APP_REVIEW`（App Store のレビューのお願い）は、あるときだけ使う（ブラウザ・itch.io・あそびトークでは何もしない）。ふるえは文字が最初にふれたとき light（`collisionStart`）・回転ボタン select・花丸 success・ゲームオーバー heavy（新記録ならカードが出るとき success）。ゲームオーバーで `APP_SCORE(score)`。カードの「もういちど」の下に小さい「ランキング」「シェア」（`#overExtra`。どちらも出ないときは場所をとらない）。
 
-## ファイル内の構成（index.html）
-- `<script>` 1 つ目: Matter.js 0.20.0（minified）。2 つ目: poly-decomp。
-- `var CHAR_DATA = [...]`: 文字ごとのアウトライン（描画用 path）と当たり判定用ポリゴン（数値の平坦配列、実行時にデコード）。
+## ファイルの構成（くわしくは docs/MAP.md）
+- `src/vendor/`: Matter.js 0.20.0・poly-decomp（minified）。
+- `src/data/char-data.js` の `var CHAR_DATA = [...]`: 文字ごとのアウトライン（描画用 path）と当たり判定用ポリゴン（数値の平坦配列、実行時にデコード）。
 - BGM はゲームの中で作る（`bgmCompose` が楽譜・`bgmRender` が OfflineAudioContext で1回だけ合成してループ）。音のファイルは持たない（前の曲は出どころが分からず 11/6 に差しかえ）。ニ長調・62 BPM・24 小節
 
 ## 物理まわりで決まっていること（安易に変えない）
